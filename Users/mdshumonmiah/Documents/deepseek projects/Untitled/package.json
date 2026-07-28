@@ -1,0 +1,14 @@
+{
+  "name": "fortresspreservationllc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fortress Preservation LLC - Property Preservation Company Website",
+  "scripts": {
+    "dev": "npx wrangler pages dev dist --port 8788",
+    "build": "node build.js",
+    "deploy": "npx wrangler pages deploy dist --project-name fortresspreservationllc"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
