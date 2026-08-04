@@ -52,6 +52,29 @@ function restoreSelection(range: Range | null) {
   sel.addRange(range);
 }
 
+function insertHtmlAtRange(range: Range, html: string) {
+  range.deleteContents();
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  const frag = document.createDocumentFragment();
+  let node;
+  let lastNode;
+  while ((node = el.firstChild)) {
+    lastNode = frag.appendChild(node);
+  }
+  range.insertNode(frag);
+  if (lastNode) {
+    const newRange = range.cloneRange();
+    newRange.setStartAfter(lastNode);
+    newRange.collapse(true);
+    const sel = window.getSelection();
+    if (sel) {
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    }
+  }
+}
+
 // ── helper: exec format command ──────────────────────────────────────────────
 function execFormat(command: string, value?: string) {
   document.execCommand(command, false, value ?? undefined);
@@ -128,8 +151,23 @@ export default function RichTextEditor({
       const el = editorRef.current;
       if (!el) return;
       el.focus();
-      restoreSelection(savedRange.current);
-      execFormat("insertHTML", html);
+      
+      let range = savedRange.current;
+      if (!range) {
+        range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+      }
+      
+      try {
+        restoreSelection(range);
+        insertHtmlAtRange(range, html);
+      } catch (err) {
+        console.error("Range insert failed, fallback to execCommand:", err);
+        restoreSelection(range);
+        execFormat("insertHTML", html);
+      }
+      
       savedRange.current = saveSelection();
       localValueRef.current = el.innerHTML;
       onChange(el.innerHTML);
@@ -233,9 +271,7 @@ export default function RichTextEditor({
   const handleAddLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (!linkUrl) return;
-    // If there's selected text, wrap it; otherwise insert new anchor
-    const sel = window.getSelection();
-    const hasSelection = sel && sel.toString().length > 0;
+    const hasSelection = savedRange.current && !savedRange.current.collapsed;
     if (hasSelection) {
       doFormat("createLink", linkUrl);
     } else {
