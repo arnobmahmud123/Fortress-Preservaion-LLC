@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 type ResearchData = {
   keywords?: string[];
@@ -309,12 +310,13 @@ export default function AIStudioPage() {
                     </div>
                   </div>
 
-                  {/* Clean Article Content */}
+                  {/* Clean Article Content with Next-Gen Rich Editor */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Clean Article Content (Markdown)</label>
-                    <div className="bg-[#071120] border border-slate-800 rounded-xl p-6 font-mono text-xs text-slate-200 overflow-y-auto max-h-[500px] whitespace-pre-wrap">
-                      {generatedArticle}
-                    </div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+                      <span>Article Content (Next-Gen Rich Editor)</span>
+                      <span className="text-amber-400 text-[10px]">Headings, Photos, Videos & Formatting Active</span>
+                    </label>
+                    <RichTextEditor value={generatedArticle} onChange={setGeneratedArticle} minHeight="450px" />
                   </div>
                 </CardContent>
                 <CardFooter className="bg-[#071120]/50 p-6 flex items-center justify-between border-t border-slate-800 gap-4">

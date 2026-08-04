@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { saveGeneratedPost, getPosts, deletePost, updatePostStatus } from "@/app/actions/post-actions";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 interface PostItem {
   id: string;
@@ -80,7 +81,7 @@ export default function AdminPostsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
           <h1 className="text-2xl font-extrabold text-white">Blog Post & Article Manager</h1>
-          <p className="text-slate-400 text-xs mt-1">Create, edit, publish, and delete blog articles for Fortress Preservation</p>
+          <p className="text-slate-400 text-xs mt-1">Create, edit, publish, and delete blog articles using the Next-Gen Rich Media Editor</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -90,16 +91,21 @@ export default function AdminPostsPage() {
         </button>
       </div>
 
-      {/* CREATE POST MODAL */}
+      {/* CREATE POST MODAL WITH NEXT-GEN RICH TEXT EDITOR */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0B1D3A] border border-amber-500/30 w-full max-w-2xl p-6 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
-              <h2 className="text-lg font-bold text-white">Publish New Article</h2>
-              <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-white">✕</button>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#0B1D3A] border border-amber-500/30 w-full max-w-5xl p-6 rounded-2xl shadow-2xl my-8 max-h-[90vh] overflow-y-auto space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <span>✍️</span> Create & Edit Article (Next-Gen Rich Editor)
+                </h2>
+                <p className="text-xs text-slate-400">Use headings H1-H6, bold/italic, upload photos & videos, and insert callout boxes.</p>
+              </div>
+              <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-white font-bold text-lg">✕</button>
             </div>
 
-            <form onSubmit={handleCreatePost} className="space-y-4">
+            <form onSubmit={handleCreatePost} className="space-y-6">
               <div>
                 <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Article Title *</label>
                 <input
@@ -107,8 +113,8 @@ export default function AdminPostsPage() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
-                  placeholder="e.g. Fannie Mae 2025 Allowable Cost Schedule Guide"
+                  className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white text-base focus:outline-none focus:border-amber-400 font-semibold"
+                  placeholder="e.g. FHA Property Preservation Grass Cutting & Lawn Maintenance Guide 2025"
                 />
               </div>
 
@@ -118,7 +124,7 @@ export default function AdminPostsPage() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
+                    className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"
                   >
                     <option value="Compliance">Compliance & Guidelines</option>
                     <option value="Field Operations">Field Operations</option>
@@ -132,7 +138,7 @@ export default function AdminPostsPage() {
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as "DRAFT" | "PUBLISHED")}
-                    className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
+                    className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"
                   >
                     <option value="PUBLISHED">Published (Public)</option>
                     <option value="DRAFT">Draft (Hidden)</option>
@@ -141,40 +147,34 @@ export default function AdminPostsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Short Summary / Excerpt</label>
+                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Short Excerpt</label>
                 <input
                   type="text"
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
-                  placeholder="Brief 1-2 sentence overview for article cards"
+                  className="w-full px-4 py-2 bg-[#071120] border border-slate-700 rounded-xl text-white text-xs"
+                  placeholder="Brief summary for card previews"
                 />
               </div>
 
+              {/* NEXT-GEN RICH TEXT EDITOR */}
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Article Content *</label>
-                <textarea
-                  rows={8}
-                  required
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400 font-mono"
-                  placeholder="Write full article content..."
-                ></textarea>
+                <label className="block text-xs font-bold uppercase text-slate-300 mb-2">Article Body (Visual & Media Editor) *</label>
+                <RichTextEditor value={content} onChange={setContent} minHeight="400px" />
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
+                  className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-amber-500/20"
                 >
                   {saving ? "Saving Post..." : "Publish Article"}
                 </button>
