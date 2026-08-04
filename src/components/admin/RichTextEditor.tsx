@@ -588,20 +588,20 @@ export default function RichTextEditor({
               <div className="flex items-center gap-2 text-slate-500 text-xs">
                 <div className="flex-1 h-px bg-slate-800"></div><span>OR</span><div className="flex-1 h-px bg-slate-800"></div>
               </div>
-              <form onSubmit={handleAddImageUrl} className="space-y-3">
+              <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: Image URL</label>
-                  <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                  <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddImageUrl(e); } }} placeholder="https://..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Alt Text / Caption</label>
-                  <input type="text" value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} placeholder="Describe the image…" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                  <input type="text" value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddImageUrl(e); } }} placeholder="Describe the image…" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <button type="button" onClick={() => setShowImageModal(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white">Cancel</button>
-                  <button type="submit" className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg">Insert Image</button>
+                  <button type="button" onClick={handleAddImageUrl} className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg">Insert Image</button>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -634,20 +634,20 @@ export default function RichTextEditor({
               <div className="flex items-center gap-2 text-slate-500 text-xs">
                 <div className="flex-1 h-px bg-slate-800"></div><span>OR</span><div className="flex-1 h-px bg-slate-800"></div>
               </div>
-              <form onSubmit={handleAddVideoUrl} className="space-y-3">
+              <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: YouTube / Vimeo / Video URL</label>
-                  <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                  <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddVideoUrl(e); } }} placeholder="https://www.youtube.com/watch?v=..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Title (optional)</label>
-                  <input type="text" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)} placeholder="Video title…" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                  <input type="text" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddVideoUrl(e); } }} placeholder="Video title…" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <button type="button" onClick={() => setShowVideoModal(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white">Cancel</button>
-                  <button type="submit" className="px-4 py-1.5 bg-purple-500 text-white font-bold text-xs rounded-lg">Insert Video</button>
+                  <button type="button" onClick={handleAddVideoUrl} className="px-4 py-1.5 bg-purple-500 text-white font-bold text-xs rounded-lg">Insert Video</button>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -665,20 +665,20 @@ export default function RichTextEditor({
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleAddLink} className="space-y-3">
+            <div className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Link Text (leave blank to use selection)</label>
-                <input type="text" value={linkText} onChange={(e) => setLinkText(e.target.value)} placeholder="e.g. FHA Guidelines Handbook" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                <input type="text" value={linkText} onChange={(e) => setLinkText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddLink(e); } }} placeholder="e.g. FHA Guidelines Handbook" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Target URL *</label>
-                <input type="url" required value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                <input type="url" required value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddLink(e); } }} placeholder="https://..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowLinkModal(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white">Cancel</button>
-                <button type="submit" className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg">Insert Link</button>
+                <button type="button" onClick={handleAddLink} className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg">Insert Link</button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
