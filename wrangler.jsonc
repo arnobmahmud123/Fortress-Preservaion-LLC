@@ -24,6 +24,6 @@
     }
   ],
   "build": {
-    "command": "npm run build && npx opennextjs-cloudflare build"
+    "command": "npm run build && npx @opennextjs/cloudflare build"
   }
 }
