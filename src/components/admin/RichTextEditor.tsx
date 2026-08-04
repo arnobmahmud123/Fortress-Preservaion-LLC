@@ -57,24 +57,43 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Track cursor position & selection
+  // LIVE SELECTION REF: single source of truth for the editor caret.
+  const selectionRef = useRef<{ start: number; end: number }>({ start: 0, end: 0 });
+
+  // Track cursor position & selection. Reads directly from the live DOM node
+  // and stores into BOTH state (for re-renders) and a ref (for instant reads).
   const updateSelection = () => {
     const textarea = textareaRef.current;
     if (textarea) {
-      setSelection({
-        start: textarea.selectionStart,
-        end: textarea.selectionEnd,
-      });
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const sel = { start, end };
+      selectionRef.current = sel;
+      setSelection(sel);
     }
   };
 
-  // Insert formatting at cursor position or selection
+  // Insert formatting at cursor position or selection.
+  // IMPORTANT: Reads directly from the live textarea element (the DOM is the
+  // source of truth), not from cached state. Every toolbar button prevents the
+  // textarea from blurring via onMouseDown={e => e.preventDefault()}, so the
+  // live selection is still valid at click time. This makes ALL tools work
+  // reliably (H1-H6, bold, italic, underline, lists, media, links, etc.).
   const insertFormatting = (prefix: string, suffix: string = "", defaultText: string = "") => {
     const textarea = textareaRef.current;
-    const start = selection.start;
-    const end = selection.end;
-
     const currentVal = value || "";
+
+    // Prefer the live DOM selection; fall back to the ref, then state.
+    let start = selectionRef.current.start;
+    let end = selectionRef.current.end;
+    if (textarea && textarea.selectionStart != null) {
+      start = textarea.selectionStart;
+      end = textarea.selectionEnd != null ? textarea.selectionEnd : start;
+    }
+    // Guard against out-of-range / stale values.
+    start = Math.max(0, Math.min(start, currentVal.length));
+    end = Math.max(start, Math.min(end, currentVal.length));
+
     const selectedText = currentVal.substring(start, end) || defaultText;
 
     const replacement = `${prefix}${selectedText}${suffix}`;
@@ -83,7 +102,9 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
     onChange(newValue);
 
     const newCursorPos = start + prefix.length + selectedText.length;
-    setSelection({ start: newCursorPos, end: newCursorPos });
+    const sel = { start: newCursorPos, end: newCursorPos };
+    selectionRef.current = sel;
+    setSelection(sel);
 
     if (textarea) {
       setTimeout(() => {
@@ -405,8 +426,10 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
           }}
           onSelect={updateSelection}
           onClick={updateSelection}
+          onMouseUp={updateSelection}
           onKeyUp={updateSelection}
           onKeyDown={updateSelection}
+          onFocus={updateSelection}
           style={{ minHeight }}
           className={`w-full p-6 bg-[#071120] text-slate-100 font-mono text-sm leading-relaxed focus:outline-none resize-y border-none ${
             mode === "MARKDOWN" ? "hidden" : "block"
