@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Property Preservation CMS",
-  description: "Advanced AI CMS",
+  title: "Fortress Preservation | Institutional Property Preservation & REO Services",
+  description: "Institutional-grade property preservation, compliant field inspections, and REO management across 47 states.",
 };
 
 export default function RootLayout({
@@ -24,13 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#071120] text-slate-100 min-h-screen`}
       >
         {children}
-        <Script src="/main.js" strategy="lazyOnload" />
-        <Script src="/index.js" strategy="lazyOnload" />
       </body>
     </html>
   );
