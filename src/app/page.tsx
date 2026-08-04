@@ -1,0 +1,125 @@
+
+export default function IndexPage() {
+  return (
+    <div dangerouslySetInnerHTML={{ __html: \`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fortress Preservation LLC — Property Preservation &amp; REO Field Services</title>
+<meta name="description" content="Fortress Preservation LLC provides institutional-grade property preservation, inspection, and REO field services for mortgage servicers, banks, and asset managers nationwide.">
+<link rel="stylesheet" href="/styles.css">
+<link rel="canonical" href="https://fortresspreservationllc.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+</head>
+<body>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>
+    <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-links" role="navigation" aria-label="Main navigation">
+      <a href="/" class="nav-link active">Home</a><a href="/services" class="nav-link">Services</a><a href="/portfolio" class="nav-link">Portfolio</a><a href="/clients" class="nav-link">For Clients</a><a href="/contractors" class="nav-link">For Contractors</a><a href="/about" class="nav-link">About</a><a href="/blog.html" class="nav-link">Blog</a><a href="/contact" class="nav-link">Contact</a><a href="/contact" class="btn btn-primary btn-sm">Request a Quote</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" aria-label="Hero banner">
+  <div class="hero-bg"></div><div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="hero-badge fade-in"><span>✦</span> Trusted by Mortgage Servicers Nationwide</div>
+    <h1 class="hero-title fade-in">Institutional-Grade<br><span class="highlight">Property Preservation</span><br>&amp; REO Field Services</h1>
+    <p class="hero-text fade-in">Fortress Preservation delivers audit-ready property preservation, compliant inspections, and full-spectrum REO management for mortgage servicers, banks, and asset managers across the United States.</p>
+    <div class="hero-actions fade-in"><a href="/contact" class="btn btn-primary btn-lg">Request a Portfolio Assessment</a><a href="/portfolio" class="btn btn-secondary btn-lg">View Our Work</a></div>
+    <div class="hero-stats fade-in"><div class="stat-item"><span class="stat-number">5,000+</span><span class="stat-label">Properties Preserved</span></div><div class="stat-item"><span class="stat-number">47</span><span class="stat-label">States Covered</span></div><div class="stat-item"><span class="stat-number">99.7%</span><span class="stat-label">Compliance Rating</span></div><div class="stat-item"><span class="stat-number">12+</span><span class="stat-label">Years Experience</span></div></div>
+  </div>
+</section>
+
+<section class="section section-light before-after-section" aria-label="Property preservation before and after comparison">
+  <div class="container">
+    <div class="text-center"><span class="section-label">Proven Results</span><h2 class="section-title">See the Fortress Difference</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Every property tells a story. From distressed to preserved — our work speaks for itself through measurable outcomes, not promises.</p></div>
+    <div class="before-after-container fade-in" role="img" aria-label="Interactive before and after comparison slider">
+      <div class="before-after-wrapper">
+        <div class="before-image" style="background:linear-gradient(135deg,#3a3a3a,#5a4a3a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1.25rem;font-family:Inter,sans-serif;">🏚 Before</div>
+        <div class="after-image" style="background:linear-gradient(135deg,#2a5a3a,#4a8a5a);clip-path:inset(0 50% 0 0);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font-size:1.25rem;font-family:Inter,sans-serif;">✦ After</div>
+        <span class="before-label">Distressed</span><span class="after-label">Preserved</span>
+        <div class="slider-handle" role="slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" tabindex="0"></div>
+      </div>
+    </div>
+    <p class="text-center" style="color:var(--text-l);font-size:.875rem;margin-top:var(--md);">Drag the slider to compare — 1234 Oak Street, Columbus, OH | Q2 2024</p>
+  </div>
+</section>
+
+<section class="section" id="services" aria-label="Our core services">
+  <div class="container">
+    <div class="text-center fade-in"><span class="section-label">Core Competencies</span><h2 class="section-title">Comprehensive Preservation Services</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">From initial inspection to final disposition, we provide end-to-end property preservation solutions that meet the strictest investor guidelines.</p></div>
+    <div class="services-grid">
+      <article class="service-card fade-in"><div class="service-icon">🔍</div><h3>Property Inspections</h3><p>Detailed condition reports with photographic evidence, occupancy verification, and investor-compliant documentation within 24–48 hours of dispatch.</p></article>
+      <article class="service-card fade-in"><div class="service-icon">🏠</div><h3>Preservation &amp; Winterization</h3><p>Secure, stabilize, and preserve vacant properties including board-ups, lock changes, debris removal, and full winterization per Fannie Mae/Freddie Mac guidelines.</p></article>
+      <article class="service-card fade-in"><div class="service-icon">📋</div><h3>REO Property Management</h3><p>Full lifecycle REO management — from broker price opinion coordination to eviction monitoring, lawn maintenance, and final property disposition.</p></article>
+      <article class="service-card fade-in"><div class="service-icon">⚖️</div><h3>Compliance &amp; Audit Support</h3><p>Audit-ready documentation for every work order. Full compliance with Fannie Mae, Freddie Mac, FHA, USDA, and VA preservation guidelines.</p></article>
+    </div>
+    <div class="text-center fade-in" style="margin-top:var(--2xl);"><a href="/services" class="btn btn-outline btn-lg">View All Services →</a></div>
+  </div>
+</section>
+
+<section class="section section-dark" aria-label="Compliance and certifications">
+  <div class="container">
+    <div class="text-center fade-in"><span class="section-label">Why Fortress</span><h2 class="section-title">Built for Institutional Trust</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Every property we touch is backed by rigorous compliance protocols, auditable documentation, and investor-grade quality standards.</p></div>
+    <div class="trust-grid fade-in">
+      <div class="trust-item"><div class="trust-icon">🏆</div><h4>Investor-Compliant</h4><p>Full adherence to Fannie Mae, Freddie Mac, FHA, and VA preservation guidelines with documented chain of custody.</p></div>
+      <div class="trust-item"><div class="trust-icon">📄</div><h4>Audit-Ready Documentation</h4><p>Every work order includes before/during/after photography, timestamped reports, and electronic signature verification.</p></div>
+      <div class="trust-item"><div class="trust-icon">🛡️</div><h4>Insured &amp; Bonded</h4><p>\$2 million general liability insurance, workers' compensation, and blanket fidelity bond coverage for all operations.</p></div>
+      <div class="trust-item"><div class="trust-icon">🌐</div><h4>Nationwide Coverage</h4><p>47-state contractor network with local market knowledge and rapid dispatch capabilities in all major MSAs.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light" aria-label="How our process works">
+  <div class="container">
+    <div class="text-center fade-in"><span class="section-label">Our Process</span><h2 class="section-title">From Work Order to Completion</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">A streamlined, transparent workflow designed for speed without compromising compliance.</p></div>
+    <div class="services-grid">
+      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">01</div><h3>Work Order Received</h3><p>Digital work order with scope, property details, and compliance requirements assigned within 1 hour of receipt.</p></div>
+      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">02</div><h3>Inspection &amp; Assessment</h3><p>Certified field inspector dispatched within 24 hours. Comprehensive condition report with photographic evidence delivered.</p></div>
+      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">03</div><h3>Scope Approval</h3><p>Detailed scope of work and cost estimate submitted for approval. No work begins without documented authorization.</p></div>
+      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">04</div><h3>Preservation &amp; Completion</h3><p>Work completed by vetted contractors. Final inspection with before/after documentation delivered within 48 hours.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-label="Featured case studies">
+  <div class="container">
+    <div class="text-center fade-in"><span class="section-label">Case Studies</span><h2 class="section-title">Featured Preservation Projects</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Real properties, real results. Each case study represents a complete preservation lifecycle with measurable outcomes.</p></div>
+    <article class="case-study-card fade-in">
+      <div class="case-study-image" style="background:linear-gradient(135deg,#2a3a4a,#4a5a6a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1rem;">📸 Case Study: 1234 Oak Street, Columbus, OH</div>
+      <div class="case-study-body">
+        <div class="case-study-meta"><span>Fannie Mae</span><span>•</span><span>Q2 2024</span><span>•</span><span>Columbus, OH</span></div>
+        <h3 class="case-study-title">Full Property Preservation &amp; Winterization</h3>
+        <p class="case-study-text">Vacant 3-bedroom property requiring complete winterization, debris removal, board-up of compromised entry points, and ongoing lawn maintenance. Completed under budget and ahead of schedule with full photographic documentation.</p>
+        <div class="case-study-steps"><span class="step-badge"><span class="step-number">1</span> Inspection</span><span class="step-badge"><span class="step-number">2</span> Scope Approval</span><span class="step-badge"><span class="step-number">3</span> Preservation</span><span class="step-badge"><span class="step-number">4</span> Final Inspection</span></div>
+      </div>
+    </article>
+    <div class="text-center fade-in"><a href="/portfolio" class="btn btn-outline btn-lg">View All Case Studies →</a></div>
+  </div>
+</section>
+
+<section class="cta-section" aria-label="Call to action">
+  <div class="container"><h2 class="fade-in">Ready to Elevate Your Preservation Standards?</h2><p class="fade-in">Schedule a portfolio assessment with our team. We'll evaluate your current preservation operations and show you how Fortress can deliver better outcomes — with full compliance and audit-ready documentation.</p><div class="cta-actions fade-in"><a href="/contact" class="btn btn-primary btn-lg">Request a Portfolio Assessment</a><a href="#" class="btn btn-accent-outline btn-lg" onclick="alert('Downloading Preservation Scope Checklist PDF...');return false;">Download Compliance Checklist</a></div></div>
+</section>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class="footer-description">Institutional-grade property preservation, REO field services, and compliance-driven inspections for mortgage servicers, banks, and asset managers nationwide.</p></div>
+      <div><h4 class="footer-heading">Quick Links</h4><ul class="footer-links"><li><a href="/">Home</a></li><li><a href="/services">Services</a></li><li><a href="/portfolio">Portfolio</a></li><li><a href="/clients">For Clients</a></li><li><a href="/contractors">For Contractors</a></li><li><a href="/about">About Us</a></li><li><a href="/contact">Contact</a></li></ul></div>
+      <div><h4 class="footer-heading">Services</h4><ul class="footer-links"><li><a href="/services">Property Inspections</a></li><li><a href="/services">Preservation &amp; Winterization</a></li><li><a href="/services">REO Management</a></li><li><a href="/services">Compliance &amp; Audit</a></li></ul></div>
+      <div><h4 class="footer-heading">Contact Us</h4><ul class="footer-contact"><li><span class="icon">📞</span><span>+1 (659) 213-7866</span></li><li><span class="icon">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class="icon">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class="footer-legal"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Compliance Disclosures</a></div></div>
+  </div>
+</footer>
+<script src="/main.js"></script>
+</body>
+</html>
+\` }} />
+  )
+}

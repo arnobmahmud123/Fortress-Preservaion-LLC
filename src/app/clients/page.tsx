@@ -1,0 +1,87 @@
+
+export default function ClientsPage() {
+  return (
+    <div dangerouslySetInnerHTML={{ __html: \`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>For Clients — Fortress Preservation LLC</title>
+<meta name="description" content="Partner with Fortress Preservation for institutional-grade property preservation services. Compliant, auditable, and built for mortgage servicers.">
+<link rel="stylesheet" href="/styles.css">
+<link rel="canonical" href="https://fortresspreservationllc.com/clients">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+</head>
+<body>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>
+    <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-links" role="navigation" aria-label="Main navigation">
+      <a href="/" class="nav-link">Home</a><a href="/services" class="nav-link">Services</a><a href="/portfolio" class="nav-link">Portfolio</a><a href="/clients" class="nav-link active">For Clients</a><a href="/contractors" class="nav-link">For Contractors</a><a href="/about" class="nav-link">About</a><a href="/blog.html" class="nav-link">Blog</a><a href="/contact" class="nav-link">Contact</a><a href="/contact" class="btn btn-primary btn-sm">Request a Quote</a>
+    </nav>
+  </div>
+</header>
+<section class="page-header"><div class="container"><h1 class="fade-in">For Institutional Clients</h1><p class="fade-in">Built to meet the rigorous standards of mortgage servicers, banks, and asset managers.</p></div></section>
+
+<section class="section">
+  <div class="container">
+    <div class="text-center fade-in"><span class="section-label">Why Partner with Fortress</span><h2 class="section-title">A Vendor You Can Verify</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">We know you evaluate vendors the way you evaluate balance sheets. Here's what sets us apart.</p></div>
+    <div class="trust-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+      <div class="trust-item" style="background:var(--primary);border-color:rgba(201,168,76,.2);"><div class="trust-icon">📊</div><h4>Audit-Ready Operations</h4><p>Every work order generates a complete digital trail — photographic evidence, timestamps, GPS coordinates, and electronic signatures. Ready for any investor audit.</p></div>
+      <div class="trust-item" style="background:var(--primary);border-color:rgba(201,168,76,.2);"><div class="trust-icon">⚡</div><h4>Rapid Dispatch</h4><p>Field inspectors dispatched within 24 hours of work order receipt. Emergency board-up services available with 4-hour response time in all major MSAs.</p></div>
+      <div class="trust-item" style="background:var(--primary);border-color:rgba(201,168,76,.2);"><div class="trust-icon">🔗</div><h4>Integrated Reporting</h4><p>API-ready reporting that integrates with your existing vendor management systems. Real-time status updates and automated compliance flagging.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light" id="client-form">
+  <div class="container container-narrow">
+    <div class="text-center fade-in"><span class="section-label">Get Started</span><h2 class="section-title">Request a Portfolio Assessment</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Tell us about your portfolio. We'll provide a customized assessment of how Fortress can improve your preservation outcomes, reduce compliance risk, and lower costs.</p></div>
+    <div class="form-container fade-in" style="margin-top:var(--2xl);">
+      <form data-validate>
+        <div class="form-fields">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label" for="cn">Full Name *</label><input type="text" id="cn" class="form-input" required><div class="form-error"></div></div>
+            <div class="form-group"><label class="form-label" for="ct">Job Title</label><input type="text" id="ct" class="form-input" placeholder="e.g., VP of Asset Management"></div>
+            <div class="form-group"><label class="form-label" for="ce">Email *</label><input type="email" id="ce" class="form-input" required><div class="form-error"></div></div>
+            <div class="form-group"><label class="form-label" for="cp">Phone *</label><input type="tel" id="cp" class="form-input" required><div class="form-error"></div></div>
+            <div class="form-group full-width"><label class="form-label" for="cco">Company Name *</label><input type="text" id="cco" class="form-input" required><div class="form-error"></div></div>
+            <div class="form-group"><label class="form-label" for="ps">Portfolio Size</label><select id="ps" class="form-select"><option value="">Select...</option><option value="under-500">Under 500</option><option value="500-2000">500–2,000</option><option value="2000-5000">2,000–5,000</option><option value="5000-10000">5,000–10,000</option><option value="over-10000">10,000+</option></select></div>
+            <div class="form-group"><label class="form-label" for="sn">Primary Need</label><select id="sn" class="form-select"><option value="">Select...</option><option value="inspections">Inspections</option><option value="preservation">Preservation</option><option value="reo">REO Management</option><option value="full">Full-Service</option></select></div>
+            <div class="form-group full-width"><label class="form-label" for="ig">Investor Guidelines *</label><select id="ig" class="form-select" required><option value="">Select...</option><option value="fannie">Fannie Mae</option><option value="freddie">Freddie Mac</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option><option value="multiple">Multiple</option></select><div class="form-error"></div></div>
+            <div class="form-group full-width"><label class="form-label" for="sa">Service Areas</label><input type="text" id="sa" class="form-input" placeholder="e.g., Southeast US, Nationwide..."></div>
+            <div class="form-group full-width"><label class="form-label" for="cm">Additional Info</label><textarea id="cm" class="form-textarea" placeholder="Current operations, challenges, or specific requirements..."></textarea></div>
+            <div class="form-group full-width"><label class="form-checkbox"><input type="checkbox" required><span>I understand this is a request for information. <span style="color:var(--error);">*</span></span></label><div class="form-error"></div></div>
+          </div>
+          <div class="text-center" style="margin-top:var(--lg);"><button type="submit" class="btn btn-primary btn-lg">Submit Assessment Request</button></div>
+        </div>
+        <div class="form-success"><div class="form-success-icon">✓</div><h3>Assessment Request Received</h3><p>Thank you. A client services team member will contact you within 1 business day.</p></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <div class="text-center fade-in"><span class="section-label">Our Commitments</span><h2 class="section-title">Compliance Framework</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Every property is managed within a framework designed for the most demanding institutional requirements.</p></div>
+    <div class="trust-grid">
+      <div class="trust-item"><div class="trust-icon">📋</div><h4>Fannie Mae Compliant</h4><p>Full adherence to Fannie Mae Single-Family Seller/Servicer Guide preservation requirements.</p></div>
+      <div class="trust-item"><div class="trust-icon">📋</div><h4>Freddie Mac Compliant</h4><p>Complete alignment with Freddie Mac Single-Family Seller/Servicer Guide requirements.</p></div>
+      <div class="trust-item"><div class="trust-icon">📋</div><h4>FHA / VA / USDA</h4><p>Specialized knowledge of FHA, VA, and USDA preservation standards.</p></div>
+      <div class="trust-item"><div class="trust-icon">📋</div><h4>Data Security</h4><p>SOC 2-aligned data handling. All property data encrypted in transit and at rest.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer" role="contentinfo"><div class="container"><div class="footer-grid"><div class="footer-brand"><a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class="footer-description">Institutional-grade property preservation and REO field services for mortgage servicers, banks, and asset managers nationwide.</p></div>
+<div><h4 class="footer-heading">Quick Links</h4><ul class="footer-links"><li><a href="/">Home</a></li><li><a href="/services">Services</a></li><li><a href="/portfolio">Portfolio</a></li><li><a href="/about">About Us</a></li><li><a href="/contact">Contact</a></li></ul></div>
+<div><h4 class="footer-heading">Services</h4><ul class="footer-links"><li><a href="/services">Property Inspections</a></li><li><a href="/services">Preservation &amp; Winterization</a></li><li><a href="/services">REO Management</a></li><li><a href="/services">Compliance &amp; Audit</a></li></ul></div>
+<div><h4 class="footer-heading">Contact Us</h4><ul class="footer-contact"><li><span class="icon">📞</span><span>+1 (659) 213-7866</span></li><li><span class="icon">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class="icon">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div></div>
+<div class="footer-bottom"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class="footer-legal"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Compliance Disclosures</a></div></div></div></footer>
+<script src="/main.js"></script>
+</body>
+</html>
+\` }} />
+  )
+}
