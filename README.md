@@ -1,37 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Property Preservation CMS
+
+Modern Next.js application deployed to Cloudflare Workers with the OpenNext Cloudflare adapter.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies and run the local Next.js development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build And Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses `@opennextjs/cloudflare`, so production deploys must build the `.open-next` output before publishing the Worker.
 
-## Learn More
+Use these commands from the project root:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm run build:cloudflare
+npm run preview
+npm run deploy
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Production builds intentionally use `next build --webpack` because the current Next.js 16/Turbopack build path can panic while processing the global CSS/PostCSS pipeline in this project. Development still uses the default `next dev` workflow.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For Cloudflare Workers Builds, configure the build with:
 
-## Deploy on Vercel
+```text
+Root directory: Untitled
+Deploy command: npm run deploy
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If the Cloudflare project is already rooted at this directory, leave the root directory blank.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
- 
+Do not use `npx wrangler deploy` as the CI deploy command for this manually configured OpenNext project. That command can reach the deploy step before `.open-next` has been compiled and fail with:
+
+```text
+ERROR Could not find compiled Open Next config, did you run the build command?
+```
+
+`npm run deploy` runs `opennextjs-cloudflare build` first, then deploys the generated Worker and assets.
+
+Cloudflare Workers Builds must also have the same environment variables/secrets needed by `next build`, such as `DATABASE_URL`, auth secrets, and any required API keys.
+
+References:
+
+- [Cloudflare Next.js guide](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/)
+- [OpenNext Cloudflare CLI](https://opennext.js.org/cloudflare/cli)

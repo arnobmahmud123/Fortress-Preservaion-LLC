@@ -48,7 +48,7 @@ export async function saveGeneratedPost({
     })
 
     return { success: true, postId: post.id }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Save Post Error:", error)
     return { success: false, error: "Failed to save post to database." }
   }

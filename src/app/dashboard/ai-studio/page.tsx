@@ -9,6 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 
+type ResearchData = {
+  keywords?: string[]
+  contentGaps?: string[]
+  competitorInsights?: string[]
+  recommendedStructure?: string[]
+}
+
 export default function AIStudioPage() {
   const [step, setStep] = useState<"SETUP" | "RESEARCHING" | "GENERATING" | "REVIEW">("SETUP")
   
@@ -16,9 +23,9 @@ export default function AIStudioPage() {
   const [audience, setAudience] = useState("")
   const [contentType, setContentType] = useState("guide")
   const [style, setStyle] = useState("expert")
-  const [length, setLength] = useState("2000")
+  const [length] = useState("2000")
   
-  const [researchData, setResearchData] = useState<any>(null)
+  const [researchData, setResearchData] = useState<ResearchData | null>(null)
   const [generatedArticle, setGeneratedArticle] = useState<string>("")
   const [isSaving, setIsSaving] = useState(false)
 
@@ -56,7 +63,7 @@ export default function AIStudioPage() {
         alert("Generation failed: " + genResult.error)
         setStep("SETUP")
       }
-    } catch (error) {
+    } catch {
       alert("An error occurred during the AI flow.")
       setStep("SETUP")
     }
@@ -84,7 +91,7 @@ export default function AIStudioPage() {
       } else {
         alert("Failed to save: " + result.error)
       }
-    } catch (err) {
+    } catch {
       alert("Failed to save post.")
     } finally {
       setIsSaving(false)
@@ -252,7 +259,7 @@ export default function AIStudioPage() {
                 <div>
                   <h4 className="text-sm font-semibold mb-2">Target Keywords</h4>
                   <div className="flex flex-wrap gap-2">
-                    {researchData.keywords?.map((kw: any) => (
+                    {researchData.keywords?.map((kw) => (
                       <span key={kw} className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs font-medium">
                         {kw}
                       </span>
@@ -262,7 +269,7 @@ export default function AIStudioPage() {
                 <div>
                   <h4 className="text-sm font-semibold mb-2">Content Gaps Filled</h4>
                   <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
-                    {researchData.contentGaps?.map((gap: any, i: number) => (
+                    {researchData.contentGaps?.map((gap, i) => (
                       <li key={i}>{gap}</li>
                     ))}
                   </ul>

@@ -23,8 +23,11 @@ Provide a comprehensive research briefing that will be used to guide an AI write
     })
 
     return { success: true, research: object }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI Research Error:", error)
-    return { success: false, error: error.message || "Failed to conduct research" }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to conduct research",
+    }
   }
 }
