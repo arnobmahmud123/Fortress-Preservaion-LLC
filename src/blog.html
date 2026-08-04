@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Blog — Fortress Preservation LLC</title>
+<meta name="description" content="Read the latest news, updates, and articles on property preservation from Fortress Preservation LLC.">
+<link rel="stylesheet" href="/styles.css">
+<link rel="canonical" href="https://fortresspreservationllc.com/blog.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+<style>
+  .blog-container {
+    padding: 6rem 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .blog-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .blog-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-heading);
+    margin-bottom: 1rem;
+  }
+  .blog-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-text-muted);
+  }
+  .create-blog-form {
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-heading);
+  }
+  .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-control:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(42, 90, 58, 0.2);
+  }
+  textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+  }
+  .blog-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .blog-post-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  .post-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: 0.5rem;
+  }
+  .post-meta {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+  }
+  .post-content {
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-text-muted);
+    background: var(--color-bg-alt);
+    border-radius: 0.75rem;
+    border: 1px dashed var(--color-border);
+  }
+</style>
+</head>
+<body>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>
+    <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-links" role="navigation" aria-label="Main navigation">
+      <a href="/" class="nav-link">Home</a><a href="/services" class="nav-link">Services</a><a href="/portfolio" class="nav-link">Portfolio</a><a href="/clients" class="nav-link">For Clients</a><a href="/contractors" class="nav-link">For Contractors</a><a href="/about" class="nav-link">About</a><a href="/blog.html" class="nav-link active">Blog</a><a href="/contact" class="nav-link">Contact</a><a href="/contact" class="btn btn-primary btn-sm">Request a Quote</a>
+    </nav>
+  </div>
+</header>
+
+<main class="blog-container">
+  <div class="blog-header">
+    <h1 class="blog-title">Fortress Blog</h1>
+    <p class="blog-subtitle">Insights and updates on property preservation</p>
+  </div>
+
+  <section class="create-blog-form">
+    <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Create a New Blog Post</h2>
+    <form id="blogForm">
+      <div class="form-group">
+        <label for="postTitle" class="form-label">Post Title</label>
+        <input type="text" id="postTitle" class="form-control" placeholder="Enter the title of your post" required>
+      </div>
+      <div class="form-group">
+        <label for="postContent" class="form-label">Post Content</label>
+        <textarea id="postContent" class="form-control" placeholder="Write your blog post content here..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Publish Post</button>
+    </form>
+  </section>
+
+  <section id="postsContainer" class="blog-posts">
+    <!-- Posts will be generated here -->
+  </section>
+</main>
+
+<footer class="site-footer" style="padding: 4rem 1.5rem; background: #111; color: #fff; text-align: center;">
+  <div class="container">
+    <p>&copy; 2026 Fortress Preservation LLC. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // Simple LocalStorage Blog Logic for demonstration
+  document.addEventListener('DOMContentLoaded', () => {
+    const blogForm = document.getElementById('blogForm');
+    const postsContainer = document.getElementById('postsContainer');
+    
+    // Load posts
+    const loadPosts = () => {
+      const posts = JSON.parse(localStorage.getItem('fortress_blog_posts') || '[]');
+      
+      if (posts.length === 0) {
+        postsContainer.innerHTML = '<div class="empty-state">No blog posts yet. Create one above!</div>';
+        return;
+      }
+      
+      postsContainer.innerHTML = '';
+      posts.forEach(post => {
+        const date = new Date(post.date).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+        
+        const card = document.createElement('article');
+        card.className = 'blog-post-card fade-in';
+        card.innerHTML = `
+          <h3 class="post-title">${post.title}</h3>
+          <div class="post-meta">Published on ${date}</div>
+          <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
+        `;
+        postsContainer.appendChild(card);
+      });
+    };
+
+    // Handle form submit
+    blogForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('postTitle').value;
+      const content = document.getElementById('postContent').value;
+      
+      const newPost = {
+        id: Date.now(),
+        title,
+        content,
+        date: new Date().toISOString()
+      };
+      
+      const posts = JSON.parse(localStorage.getItem('fortress_blog_posts') || '[]');
+      posts.unshift(newPost);
+      localStorage.setItem('fortress_blog_posts', JSON.stringify(posts));
+      
+      // Reset form and reload posts
+      blogForm.reset();
+      loadPosts();
+      
+      // Show success alert
+      alert('Blog post published successfully!');
+    });
+
+    loadPosts();
+  });
+</script>
+</body>
+</html>
