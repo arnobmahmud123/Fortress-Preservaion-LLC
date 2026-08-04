@@ -9,7 +9,7 @@ import { Key, ShieldCheck, HardDrive } from "lucide-react"
 
 export default function SettingsPage() {
   const [geminiKey, setGeminiKey] = useState("AIzaSy...................................");
-  const [model, setModel] = useState("gemini-1.5-flash");
+  const [model, setModel] = useState("gemini-2.5-flash");
   
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto pb-10">

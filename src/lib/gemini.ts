@@ -19,11 +19,23 @@ export async function callGeminiApi({
     );
   }
 
-  const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp", "gemini-1.0-pro"];
+  // NOTE: Only currently-active Gemini models are listed here.
+  // Deprecated/shut-down models (gemini-1.0-pro, gemini-2.0-flash,
+  // gemini-2.0-flash-exp, gemini-1.5-flash, etc.) have been removed.
+  // Gemini "flash" is the default because it is stable, fast, cheap, and
+  // supports generateContent with a large context window.
+  const models = [
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-pro",
+    "gemini-3-flash-preview",
+    "gemini-3.1-pro-preview",
+  ];
   let lastError = "";
 
   for (const modelName of models) {
     try {
+      // v1beta is the current, stable, versioned endpoint for generateContent.
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
       const requestBody: any = {
