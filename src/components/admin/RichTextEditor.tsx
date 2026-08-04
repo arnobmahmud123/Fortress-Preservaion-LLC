@@ -19,6 +19,7 @@ import {
   Image as ImageIcon,
   Video as VideoIcon,
   Link as LinkIcon,
+  Link2Off,
   AlertCircle,
   Eye,
   Edit3,
@@ -118,6 +119,11 @@ export default function RichTextEditor({
   const handleInput = useCallback(() => {
     const el = editorRef.current;
     if (!el) return;
+
+    // Clean up empty anchor tags so they don't trap the cursor when text is deleted
+    const emptyAnchors = el.querySelectorAll("a:empty");
+    emptyAnchors.forEach((anchor) => anchor.remove());
+
     localValueRef.current = el.innerHTML;
     onChange(el.innerHTML);
   }, [onChange]);
@@ -454,6 +460,12 @@ export default function RichTextEditor({
               }}
             >
               <LinkIcon className="w-4 h-4" />
+            </TB>
+            <TB
+              title="Remove Link (Unlink)"
+              onClick={() => doFormat("unlink")}
+            >
+              <Link2Off className="w-4 h-4 text-rose-400" />
             </TB>
           </div>
 
