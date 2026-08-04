@@ -64,7 +64,7 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const savedRange = useRef<Range | null>(null);
-  const isInternalChange = useRef(false);
+  const localValueRef = useRef(value);
 
   const [mode, setMode] = useState<"VISUAL" | "HTML">("VISUAL");
   const [showImageModal, setShowImageModal] = useState(false);
@@ -85,13 +85,9 @@ export default function RichTextEditor({
   useEffect(() => {
     const el = editorRef.current;
     if (!el) return;
-    // avoid cursor-jumping when the change came from us typing
-    if (isInternalChange.current) {
-      isInternalChange.current = false;
-      return;
-    }
-    if (el.innerHTML !== value) {
+    if (value !== localValueRef.current) {
       el.innerHTML = value || "";
+      localValueRef.current = value;
     }
   }, [value]);
 
@@ -99,7 +95,7 @@ export default function RichTextEditor({
   const handleInput = useCallback(() => {
     const el = editorRef.current;
     if (!el) return;
-    isInternalChange.current = true;
+    localValueRef.current = el.innerHTML;
     onChange(el.innerHTML);
   }, [onChange]);
 
@@ -120,7 +116,7 @@ export default function RichTextEditor({
       restoreSelection(savedRange.current);
       execFormat(command, value);
       savedRange.current = saveSelection();
-      isInternalChange.current = true;
+      localValueRef.current = el.innerHTML;
       onChange(el.innerHTML);
     },
     [onChange]
@@ -135,7 +131,7 @@ export default function RichTextEditor({
       restoreSelection(savedRange.current);
       execFormat("insertHTML", html);
       savedRange.current = saveSelection();
-      isInternalChange.current = true;
+      localValueRef.current = el.innerHTML;
       onChange(el.innerHTML);
     },
     [onChange]
@@ -150,7 +146,7 @@ export default function RichTextEditor({
       restoreSelection(savedRange.current);
       execFormat("formatBlock", `h${level}`);
       savedRange.current = saveSelection();
-      isInternalChange.current = true;
+      localValueRef.current = el.innerHTML;
       onChange(el.innerHTML);
     },
     [onChange]
@@ -262,7 +258,7 @@ export default function RichTextEditor({
     const el = editorRef.current;
     if (el) {
       el.innerHTML = htmlSource;
-      isInternalChange.current = true;
+      localValueRef.current = htmlSource;
       onChange(htmlSource);
     }
     setMode("VISUAL");

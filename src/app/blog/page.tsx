@@ -48,6 +48,10 @@ export default async function BlogPage() {
       where: { status: "PUBLISHED" },
       orderBy: { publishedAt: "desc" },
       take: 10,
+      include: {
+        categories: true,
+        author: true
+      }
     });
     
     if (dbPosts && dbPosts.length > 0) {
@@ -56,11 +60,11 @@ export default async function BlogPage() {
         title: p.title,
         slug: p.slug,
         excerpt: p.excerpt || p.content.slice(0, 150) + "...",
-        category: p.category || "Preservation",
-        author: p.author || "Fortress Team",
+        category: p.categories[0]?.name || "Preservation",
+        author: p.author?.name || "Fortress Team",
         publishedAt: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent",
         readTime: "5 min read",
-        image: p.coverImage || "/images/contractor_inspection.jpg"
+        image: p.featuredImage || "/images/contractor_inspection.jpg"
       }));
     }
   } catch {

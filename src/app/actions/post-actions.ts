@@ -27,6 +27,21 @@ export async function saveGeneratedPost({
   const session = await auth();
   const userId = session?.user?.id || "admin-system-id";
 
+  try {
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        name: "Admin System",
+        email: "admin@fortresspreservation.com",
+        role: "ADMIN"
+      }
+    });
+  } catch (err) {
+    console.error("Failed to upsert admin user:", err);
+  }
+
   const slug =
     title
       .toLowerCase()

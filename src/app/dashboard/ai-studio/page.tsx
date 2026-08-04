@@ -195,7 +195,7 @@ export default function AIStudioPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-slate-300">Content Type</Label>
-                    <Select value={contentType} onValueChange={(val) => setContentType(val)}>
+                    <Select value={contentType} onValueChange={(val) => setContentType(val || "guide")}>
                       <SelectTrigger className="bg-[#071120] border-slate-700 text-white"><SelectValue placeholder="Select type" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="guide">Industry Guide</SelectItem>
@@ -208,7 +208,7 @@ export default function AIStudioPage() {
 
                   <div className="space-y-2">
                     <Label className="text-slate-300">Writing Style</Label>
-                    <Select value={style} onValueChange={(val) => setStyle(val)}>
+                    <Select value={style} onValueChange={(val) => setStyle(val || "expert")}>
                       <SelectTrigger className="bg-[#071120] border-slate-700 text-white"><SelectValue placeholder="Select style" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="professional">Professional</SelectItem>
