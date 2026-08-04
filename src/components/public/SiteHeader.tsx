@@ -49,8 +49,11 @@ export default function SiteHeader() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
+          <Link href="/login" className="px-3.5 py-1.5 rounded-lg border border-amber-500/30 text-amber-400 hover:bg-amber-400/10 text-xs font-bold uppercase tracking-wider transition-colors">
+            🔑 Admin Login
+          </Link>
           <Link href="/contact" className="btn btn-primary btn-sm text-xs font-semibold uppercase tracking-wider">
-            Request a Quote
+            Request Quote
           </Link>
         </div>
 

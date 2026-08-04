@@ -1,0 +1,251 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { saveGeneratedPost, getPosts, deletePost, updatePostStatus } from "@/app/actions/post-actions";
+
+interface PostItem {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  status: string;
+  createdAt: string | Date;
+}
+
+export default function AdminPostsPage() {
+  const [posts, setPosts] = useState<PostItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // New Post Form State
+  const [title, setTitle] = useState("");
+  const [excerpt, setExcerpt] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("Compliance");
+  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("PUBLISHED");
+  const [saving, setSaving] = useState(false);
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    const res = await getPosts("ALL");
+    if (res.success && res.posts) {
+      setPosts(res.posts as unknown as PostItem[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const handleCreatePost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || !content) return;
+    setSaving(true);
+
+    const res = await saveGeneratedPost({
+      title,
+      content,
+      excerpt,
+      status,
+      seoTitle: title,
+      metaDescription: excerpt || title,
+      featuredImage: category === "Field Operations" ? "/images/contractor_preservation.jpg" : category === "REO Management" ? "/images/contractor_reo.jpg" : "/images/contractor_inspection.jpg"
+    });
+
+    if (res.success) {
+      setTitle("");
+      setExcerpt("");
+      setContent("");
+      setShowCreateModal(false);
+      fetchPosts();
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+    await deletePost(id);
+    fetchPosts();
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: string) => {
+    const nextStatus = currentStatus === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
+    await updatePostStatus(id, nextStatus);
+    fetchPosts();
+  };
+
+  return (
+    <div className="p-6 space-y-6 text-slate-100 font-sans">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white">Blog Post & Article Manager</h1>
+          <p className="text-slate-400 text-xs mt-1">Create, edit, publish, and delete blog articles for Fortress Preservation</p>
+        </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-500/10 flex items-center gap-2 self-start"
+        >
+          <span>+</span> Create New Blog Post
+        </button>
+      </div>
+
+      {/* CREATE POST MODAL */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#0B1D3A] border border-amber-500/30 w-full max-w-2xl p-6 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+              <h2 className="text-lg font-bold text-white">Publish New Article</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-white">✕</button>
+            </div>
+
+            <form onSubmit={handleCreatePost} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Article Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
+                  placeholder="e.g. Fannie Mae 2025 Allowable Cost Schedule Guide"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
+                  >
+                    <option value="Compliance">Compliance & Guidelines</option>
+                    <option value="Field Operations">Field Operations</option>
+                    <option value="REO Management">REO Management</option>
+                    <option value="Industry News">Industry News</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Publish Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as "DRAFT" | "PUBLISHED")}
+                    className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
+                  >
+                    <option value="PUBLISHED">Published (Public)</option>
+                    <option value="DRAFT">Draft (Hidden)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Short Summary / Excerpt</label>
+                <input
+                  type="text"
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400"
+                  placeholder="Brief 1-2 sentence overview for article cards"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Article Content *</label>
+                <textarea
+                  rows={8}
+                  required
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400 font-mono"
+                  placeholder="Write full article content..."
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-6 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
+                >
+                  {saving ? "Saving Post..." : "Publish Article"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* POSTS LIST TABLE */}
+      <div className="bg-[#0B1D3A]/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        {loading ? (
+          <div className="p-12 text-center text-slate-400 text-sm">Loading articles...</div>
+        ) : posts.length === 0 ? (
+          <div className="p-12 text-center space-y-3">
+            <p className="text-slate-400 text-sm">No blog posts found in database.</p>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-4 py-2 bg-amber-400 text-slate-950 font-bold text-xs uppercase rounded-lg"
+            >
+              Create Your First Post
+            </button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#071120] text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                  <th className="p-4">Title</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4">Created Date</th>
+                  <th className="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                {posts.map((p) => (
+                  <tr key={p.id} className="hover:bg-[#0F2448]/40 transition-colors">
+                    <td className="p-4 font-semibold text-white">
+                      <div>{p.title}</div>
+                      <div className="text-[10px] text-slate-500 font-mono mt-0.5">/blog/{p.slug}</div>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => handleToggleStatus(p.id, p.status)}
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                          p.status === "PUBLISHED"
+                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                            : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                        }`}
+                      >
+                        {p.status}
+                      </button>
+                    </td>
+                    <td className="p-4 text-slate-400">
+                      {new Date(p.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-right space-x-2">
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-semibold transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
