@@ -1,63 +1,35 @@
 "use server";
 
-import { generateObject } from "ai";
-import { getGeminiProvider } from "@/lib/gemini";
-import { z } from "zod";
+import { callGeminiApi } from "@/lib/gemini";
 
 export async function conductContentResearch(topic: string) {
   const systemPrompt = `You are a Senior SEO Strategist and Property Preservation Market Analyst.
 Analyze the topic: "${topic}".
-Provide a comprehensive research briefing that will be used to guide an AI writer.`;
+Provide a comprehensive research briefing that will be used to guide an AI writer.
 
-  const modelsToTry = [
-    "gemini-1.5-flash-latest",
-    "gemini-2.0-flash",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash"
-  ];
+Return ONLY a valid JSON object with the following schema:
+{
+  "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"],
+  "competitorInsights": ["insight 1", "insight 2", "insight 3"],
+  "contentGaps": ["gap 1", "gap 2"],
+  "recommendedStructure": ["H2 Heading 1", "H2 Heading 2", "H2 Heading 3", "H2 Heading 4"]
+}`;
 
-  let lastError: Error | null = null;
-  const google = getGeminiProvider();
+  try {
+    const res = await callGeminiApi({
+      prompt: `Generate the research brief for topic: "${topic}".`,
+      systemInstruction: systemPrompt,
+      jsonMode: true,
+    });
 
-  for (const modelName of modelsToTry) {
-    try {
-      const model = google(modelName);
-
-      const { object } = await generateObject({
-        model,
-        system: systemPrompt,
-        prompt: "Generate the research brief.",
-        schema: z.object({
-          keywords: z
-            .array(z.string())
-            .describe(
-              "List of 5-8 highly relevant SEO keywords with good search volume in property preservation"
-            ),
-          competitorInsights: z
-            .array(z.string())
-            .describe(
-              "3-5 key points that competitors usually cover for this topic"
-            ),
-          contentGaps: z
-            .array(z.string())
-            .describe(
-              "2-3 unique angles or missing information in typical competitor articles"
-            ),
-          recommendedStructure: z
-            .array(z.string())
-            .describe("A proposed list of H2 headings for the article"),
-        }),
-      });
-
-      return { success: true, research: object, usedModel: modelName };
-    } catch (err: unknown) {
-      console.warn(`Model ${modelName} failed, trying next fallback:`, err);
-      lastError = err instanceof Error ? err : new Error(String(err));
-    }
+    const parsedObject = JSON.parse(res.text);
+    return { success: true, research: parsedObject, modelUsed: res.modelUsed };
+  } catch (error: unknown) {
+    console.error("AI Research Error:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to conduct research",
+    };
   }
-
-  return {
-    success: false,
-    error: lastError?.message || "Failed to conduct research with Gemini models.",
-  };
 }

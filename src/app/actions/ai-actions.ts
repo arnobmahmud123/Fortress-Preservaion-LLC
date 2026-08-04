@@ -1,7 +1,6 @@
 "use server";
 
-import { generateText } from "ai";
-import { getGeminiProvider } from "@/lib/gemini";
+import { callGeminiApi } from "@/lib/gemini";
 
 export async function generatePropertyPreservationArticle({
   topic,
@@ -28,36 +27,20 @@ Requirements:
 - Output MUST be formatted in Markdown.
 - Include a "SEO Metadata" section at the very end formatted as JSON containing: { "seoTitle": "...", "metaDescription": "...", "focusKeyword": "...", "secondaryKeywords": ["..."] }`;
 
-  const modelsToTry = [
-    "gemini-1.5-flash-latest",
-    "gemini-2.0-flash",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash"
-  ];
+  try {
+    const res = await callGeminiApi({
+      prompt: `Generate the ${contentType} about "${topic}" for audience "${audience}". Style: ${style}. Word count target: ${length}.`,
+      systemInstruction: systemPrompt,
+      jsonMode: false,
+    });
 
-  let lastError: Error | null = null;
-  const google = getGeminiProvider();
-
-  for (const modelName of modelsToTry) {
-    try {
-      const model = google(modelName);
-
-      const { text } = await generateText({
-        model,
-        system: systemPrompt,
-        prompt: `Generate the ${contentType} now. Make it institutional-grade quality.`,
-        temperature: 0.7,
-      });
-
-      return { success: true, text, usedModel: modelName };
-    } catch (err: unknown) {
-      console.warn(`Model ${modelName} failed, trying next fallback:`, err);
-      lastError = err instanceof Error ? err : new Error(String(err));
-    }
+    return { success: true, text: res.text, modelUsed: res.modelUsed };
+  } catch (error: unknown) {
+    console.error("AI Generation Error:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to generate article",
+    };
   }
-
-  return {
-    success: false,
-    error: lastError?.message || "Failed to generate article with Gemini models.",
-  };
 }
