@@ -1,24 +1,7 @@
 "use server";
 
 import { generateText } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-
-function getGoogleModel() {
-  const apiKey =
-    process.env.GOOGLE_GEMINI_API_KEY ||
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error(
-      "GOOGLE_GEMINI_API_KEY is missing in your Cloudflare / environment variables. Please add GOOGLE_GEMINI_API_KEY to your environment variables."
-    );
-  }
-
-  const google = createGoogleGenerativeAI({ apiKey });
-  return google("gemini-1.5-flash");
-}
+import { getGeminiProvider } from "@/lib/gemini";
 
 export async function generatePropertyPreservationArticle({
   topic,
@@ -45,23 +28,36 @@ Requirements:
 - Output MUST be formatted in Markdown.
 - Include a "SEO Metadata" section at the very end formatted as JSON containing: { "seoTitle": "...", "metaDescription": "...", "focusKeyword": "...", "secondaryKeywords": ["..."] }`;
 
-  try {
-    const model = getGoogleModel();
+  const modelsToTry = [
+    "gemini-1.5-flash-latest",
+    "gemini-2.0-flash",
+    "gemini-1.5-pro-latest",
+    "gemini-1.5-flash"
+  ];
 
-    const { text } = await generateText({
-      model,
-      system: systemPrompt,
-      prompt: `Generate the ${contentType} now. Make it institutional-grade quality.`,
-      temperature: 0.7,
-    });
+  let lastError: Error | null = null;
+  const google = getGeminiProvider();
 
-    return { success: true, text };
-  } catch (error: unknown) {
-    console.error("AI Generation Error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to generate article",
-    };
+  for (const modelName of modelsToTry) {
+    try {
+      const model = google(modelName);
+
+      const { text } = await generateText({
+        model,
+        system: systemPrompt,
+        prompt: `Generate the ${contentType} now. Make it institutional-grade quality.`,
+        temperature: 0.7,
+      });
+
+      return { success: true, text, usedModel: modelName };
+    } catch (err: unknown) {
+      console.warn(`Model ${modelName} failed, trying next fallback:`, err);
+      lastError = err instanceof Error ? err : new Error(String(err));
+    }
   }
+
+  return {
+    success: false,
+    error: lastError?.message || "Failed to generate article with Gemini models.",
+  };
 }
