@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import {
   Bold,
   Italic,
@@ -25,7 +25,10 @@ import {
   Upload,
   X,
   FileCode,
-  Minus
+  Minus,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -34,138 +37,198 @@ interface RichTextEditorProps {
   minHeight?: string;
 }
 
-export default function RichTextEditor({ value, onChange, minHeight = "450px" }: RichTextEditorProps) {
-  const [mode, setMode] = useState<"VISUAL" | "MARKDOWN">("VISUAL");
-  const [selection, setSelection] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+// ── helper: save & restore selection ────────────────────────────────────────
+function saveSelection(): Range | null {
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0) return sel.getRangeAt(0).cloneRange();
+  return null;
+}
 
+function restoreSelection(range: Range | null) {
+  if (!range) return;
+  const sel = window.getSelection();
+  if (!sel) return;
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ── helper: exec format command ──────────────────────────────────────────────
+function execFormat(command: string, value?: string) {
+  document.execCommand(command, false, value ?? undefined);
+}
+
+export default function RichTextEditor({
+  value,
+  onChange,
+  minHeight = "450px",
+}: RichTextEditorProps) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const savedRange = useRef<Range | null>(null);
+  const isInternalChange = useRef(false);
+
+  const [mode, setMode] = useState<"VISUAL" | "HTML">("VISUAL");
   const [showImageModal, setShowImageModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
-
-  // Media Modal States
   const [imageUrl, setImageUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
-  const [imageCaption, setImageCaption] = useState("");
-
   const [videoUrl, setVideoUrl] = useState("");
   const [videoTitle, setVideoTitle] = useState("");
-
   const [linkUrl, setLinkUrl] = useState("");
   const [linkText, setLinkText] = useState("");
+  const [htmlSource, setHtmlSource] = useState("");
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoFileInputRef = useRef<HTMLInputElement>(null);
 
-  // LIVE SELECTION REF: single source of truth for the editor caret.
-  const selectionRef = useRef<{ start: number; end: number }>({ start: 0, end: 0 });
-
-  // Track cursor position & selection. Reads directly from the live DOM node
-  // and stores into BOTH state (for re-renders) and a ref (for instant reads).
-  const updateSelection = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const sel = { start, end };
-      selectionRef.current = sel;
-      setSelection(sel);
+  // ── Sync value → editor (only when value changes from outside) ────────────
+  useEffect(() => {
+    const el = editorRef.current;
+    if (!el) return;
+    // avoid cursor-jumping when the change came from us typing
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
     }
+    if (el.innerHTML !== value) {
+      el.innerHTML = value || "";
+    }
+  }, [value]);
+
+  // ── Notify parent on every keystroke / mutation ───────────────────────────
+  const handleInput = useCallback(() => {
+    const el = editorRef.current;
+    if (!el) return;
+    isInternalChange.current = true;
+    onChange(el.innerHTML);
+  }, [onChange]);
+
+  // ── Save cursor before toolbar button steals focus ────────────────────────
+  const handleEditorMouseUp = () => {
+    savedRange.current = saveSelection();
+  };
+  const handleEditorKeyUp = () => {
+    savedRange.current = saveSelection();
   };
 
-  // Insert formatting at cursor position or selection.
-  // IMPORTANT: Reads directly from the live textarea element (the DOM is the
-  // source of truth), not from cached state. Every toolbar button prevents the
-  // textarea from blurring via onMouseDown={e => e.preventDefault()}, so the
-  // live selection is still valid at click time. This makes ALL tools work
-  // reliably (H1-H6, bold, italic, underline, lists, media, links, etc.).
-  const insertFormatting = (prefix: string, suffix: string = "", defaultText: string = "") => {
-    const textarea = textareaRef.current;
-    const currentVal = value || "";
+  // ── Core toolbar action: restores focus + selection, then runs command ────
+  const doFormat = useCallback(
+    (command: string, value?: string) => {
+      const el = editorRef.current;
+      if (!el) return;
+      el.focus();
+      restoreSelection(savedRange.current);
+      execFormat(command, value);
+      savedRange.current = saveSelection();
+      isInternalChange.current = true;
+      onChange(el.innerHTML);
+    },
+    [onChange]
+  );
 
-    // Prefer the live DOM selection; fall back to the ref, then state.
-    let start = selectionRef.current.start;
-    let end = selectionRef.current.end;
-    if (textarea && textarea.selectionStart != null) {
-      start = textarea.selectionStart;
-      end = textarea.selectionEnd != null ? textarea.selectionEnd : start;
-    }
-    // Guard against out-of-range / stale values.
-    start = Math.max(0, Math.min(start, currentVal.length));
-    end = Math.max(start, Math.min(end, currentVal.length));
+  // ── Insert raw HTML at caret ──────────────────────────────────────────────
+  const insertHTML = useCallback(
+    (html: string) => {
+      const el = editorRef.current;
+      if (!el) return;
+      el.focus();
+      restoreSelection(savedRange.current);
+      execFormat("insertHTML", html);
+      savedRange.current = saveSelection();
+      isInternalChange.current = true;
+      onChange(el.innerHTML);
+    },
+    [onChange]
+  );
 
-    const selectedText = currentVal.substring(start, end) || defaultText;
+  // ── Heading buttons: wrap selection in <hN> ────────────────────────────────
+  const insertHeading = useCallback(
+    (level: number) => {
+      const el = editorRef.current;
+      if (!el) return;
+      el.focus();
+      restoreSelection(savedRange.current);
+      execFormat("formatBlock", `h${level}`);
+      savedRange.current = saveSelection();
+      isInternalChange.current = true;
+      onChange(el.innerHTML);
+    },
+    [onChange]
+  );
 
-    const replacement = `${prefix}${selectedText}${suffix}`;
-    const newValue = currentVal.substring(0, start) + replacement + currentVal.substring(end);
+  // ── Stats ──────────────────────────────────────────────────────────────────
+  const plainText = editorRef.current?.innerText ?? value.replace(/<[^>]+>/g, "");
+  const words = plainText.trim() ? plainText.trim().split(/\s+/).length : 0;
+  const chars = plainText.length;
+  const readTime = Math.max(1, Math.ceil(words / 200));
 
-    onChange(newValue);
-
-    const newCursorPos = start + prefix.length + selectedText.length;
-    const sel = { start: newCursorPos, end: newCursorPos };
-    selectionRef.current = sel;
-    setSelection(sel);
-
-    if (textarea) {
-      setTimeout(() => {
-        textarea.focus();
-        textarea.setSelectionRange(newCursorPos, newCursorPos);
-      }, 30);
-    }
-  };
-
-  // Upload Photo File Handler
+  // ── Photo upload ───────────────────────────────────────────────────────────
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Url = event.target?.result as string;
-        const markdownImg = `\n\n![${file.name}](${base64Url})\n*${file.name}*\n\n`;
-        insertFormatting("", "", markdownImg);
-        setShowImageModal(false);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const src = evt.target?.result as string;
+      insertHTML(
+        `<figure style="margin:1.5rem 0;text-align:center;">
+          <img src="${src}" alt="${file.name}" style="max-width:100%;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.4);" />
+          <figcaption style="color:#94a3b8;font-size:0.8rem;margin-top:0.5rem;">${file.name}</figcaption>
+        </figure>`
+      );
+      setShowImageModal(false);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
-  // Upload Video File Handler
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Url = event.target?.result as string;
-        const videoTag = `\n\n<video controls src="${base64Url}" class="w-full rounded-xl my-4 shadow-lg" alt="${file.name}"></video>\n\n`;
-        insertFormatting("", "", videoTag);
-        setShowVideoModal(false);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const src = evt.target?.result as string;
+      insertHTML(
+        `<video controls src="${src}" style="width:100%;border-radius:12px;margin:1.5rem 0;box-shadow:0 4px 24px rgba(0,0,0,.4);"></video>`
+      );
+      setShowVideoModal(false);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
   const handleAddImageUrl = (e: React.FormEvent) => {
     e.preventDefault();
     if (!imageUrl) return;
-    const markdownImg = `\n\n![${imageAlt || "Property Preservation Image"}](${imageUrl})\n*${imageCaption || imageAlt || ""}*\n\n`;
-    insertFormatting("", "", markdownImg);
+    insertHTML(
+      `<figure style="margin:1.5rem 0;text-align:center;">
+        <img src="${imageUrl}" alt="${imageAlt || "image"}" style="max-width:100%;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.4);" />
+        ${imageAlt ? `<figcaption style="color:#94a3b8;font-size:0.8rem;margin-top:0.5rem;">${imageAlt}</figcaption>` : ""}
+      </figure>`
+    );
     setImageUrl("");
     setImageAlt("");
-    setImageCaption("");
     setShowImageModal(false);
   };
 
   const handleAddVideoUrl = (e: React.FormEvent) => {
     e.preventDefault();
     if (!videoUrl) return;
-    let embedSnippet = "";
+    let html = "";
     if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-      const videoId = videoUrl.split("v=")[1]?.split("&")[0] || videoUrl.split("/").pop();
-      embedSnippet = `\n\n<iframe class="w-full aspect-video rounded-xl my-4 shadow-lg" src="https://www.youtube.com/embed/${videoId}" title="${videoTitle || "Video"}" allowfullscreen></iframe>\n\n`;
+      const vid =
+        videoUrl.split("v=")[1]?.split("&")[0] || videoUrl.split("/").pop() || "";
+      html = `<div style="position:relative;padding-bottom:56.25%;height:0;margin:1.5rem 0;border-radius:12px;overflow:hidden;">
+        <iframe src="https://www.youtube.com/embed/${vid}" title="${videoTitle || "Video"}" frameborder="0" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;"></iframe>
+      </div>`;
+    } else if (videoUrl.includes("vimeo.com")) {
+      const vid = videoUrl.split("/").pop() || "";
+      html = `<div style="position:relative;padding-bottom:56.25%;height:0;margin:1.5rem 0;border-radius:12px;overflow:hidden;">
+        <iframe src="https://player.vimeo.com/video/${vid}" title="${videoTitle || "Video"}" frameborder="0" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;"></iframe>
+      </div>`;
     } else {
-      embedSnippet = `\n\n<video controls src="${videoUrl}" class="w-full rounded-xl my-4 shadow-lg"></video>\n\n`;
+      html = `<video controls src="${videoUrl}" style="width:100%;border-radius:12px;margin:1.5rem 0;"></video>`;
     }
-    insertFormatting("", "", embedSnippet);
+    insertHTML(html);
     setVideoUrl("");
     setVideoTitle("");
     setShowVideoModal(false);
@@ -174,290 +237,299 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
   const handleAddLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (!linkUrl) return;
-    insertFormatting(`[${linkText || "Link"}](${linkUrl})`, "", "");
+    // If there's selected text, wrap it; otherwise insert new anchor
+    const sel = window.getSelection();
+    const hasSelection = sel && sel.toString().length > 0;
+    if (hasSelection) {
+      doFormat("createLink", linkUrl);
+    } else {
+      insertHTML(
+        `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;text-decoration:underline;">${linkText || linkUrl}</a>`
+      );
+    }
     setLinkUrl("");
     setLinkText("");
     setShowLinkModal(false);
   };
 
-  const words = value.trim() ? value.trim().split(/\s+/).length : 0;
-  const chars = value.length;
-  const readTime = Math.max(1, Math.ceil(words / 200));
+  // ── HTML source mode toggle ────────────────────────────────────────────────
+  const switchToHTML = () => {
+    const el = editorRef.current;
+    setHtmlSource(el?.innerHTML ?? "");
+    setMode("HTML");
+  };
+  const switchToVisual = () => {
+    const el = editorRef.current;
+    if (el) {
+      el.innerHTML = htmlSource;
+      isInternalChange.current = true;
+      onChange(htmlSource);
+    }
+    setMode("VISUAL");
+  };
+
+  // ── Toolbar button helper ──────────────────────────────────────────────────
+  const TB = ({
+    title,
+    onClick,
+    children,
+    className = "",
+  }: {
+    title: string;
+    onClick: () => void;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <button
+      type="button"
+      title={title}
+      onMouseDown={(e) => {
+        // Save selection BEFORE focus leaves the editor
+        savedRange.current = saveSelection();
+        e.preventDefault(); // prevent editor blur
+      }}
+      onClick={onClick}
+      className={`p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors ${className}`}
+    >
+      {children}
+    </button>
+  );
+
+  const TBGroup = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-0.5">
+      {children}
+    </div>
+  );
 
   return (
     <div className="w-full bg-[#071120] border border-slate-700/70 rounded-2xl overflow-hidden shadow-2xl font-sans text-slate-100">
-      {/* TOP ADVANCED TOOLBAR */}
+      {/* ── TOOLBAR ─────────────────────────────────────────────── */}
       <div className="bg-[#0B1D3A] border-b border-slate-800 p-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-1">
-          {/* Headings Group */}
-          <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-0.5">
-            <button
-              type="button"
-              title="Heading 1"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n# ", "\n", "Heading 1")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
-            >
+        <div className="flex flex-wrap items-center gap-1.5">
+
+          {/* Headings */}
+          <TBGroup>
+            <TB title="Heading 1" onClick={() => insertHeading(1)}>
               <Heading1 className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Heading 2"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n## ", "\n", "Heading 2")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
-            >
+            </TB>
+            <TB title="Heading 2" onClick={() => insertHeading(2)}>
               <Heading2 className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Heading 3"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n### ", "\n", "Heading 3")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
-            >
+            </TB>
+            <TB title="Heading 3" onClick={() => insertHeading(3)}>
               <Heading3 className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Heading 4"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n#### ", "\n", "Heading 4")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
-            >
+            </TB>
+            <TB title="Heading 4" onClick={() => insertHeading(4)}>
               <Heading4 className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Heading 5"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n##### ", "\n", "Heading 5")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
-            >
+            </TB>
+            <TB title="Heading 5" onClick={() => insertHeading(5)}>
               <Heading5 className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Heading 6"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n###### ", "\n", "Heading 6")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
-            >
+            </TB>
+            <TB title="Heading 6" onClick={() => insertHeading(6)}>
               <Heading6 className="w-4 h-4" />
-            </button>
-          </div>
+            </TB>
+            <TB title="Paragraph" onClick={() => doFormat("formatBlock", "p")}>
+              <span className="text-xs font-bold px-0.5">P</span>
+            </TB>
+          </TBGroup>
 
-          {/* Text Styles */}
-          <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-0.5">
-            <button
-              type="button"
-              title="Bold"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("**", "**", "bold text")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+          {/* Text styles */}
+          <TBGroup>
+            <TB title="Bold (Ctrl+B)" onClick={() => doFormat("bold")}>
               <Bold className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Italic"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("*", "*", "italic text")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+            </TB>
+            <TB title="Italic (Ctrl+I)" onClick={() => doFormat("italic")}>
               <Italic className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Underline"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("<u>", "</u>", "underlined text")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+            </TB>
+            <TB title="Underline (Ctrl+U)" onClick={() => doFormat("underline")}>
               <Underline className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Strikethrough"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("~~", "~~", "strikethrough text")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+            </TB>
+            <TB title="Strikethrough" onClick={() => doFormat("strikeThrough")}>
               <Strikethrough className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Inline Code"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("`", "`", "code")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+            </TB>
+            <TB title="Inline Code" onClick={() => insertHTML("<code style=\"background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;color:#f59e0b;\">code</code>")}>
               <Code className="w-4 h-4" />
-            </button>
-          </div>
+            </TB>
+          </TBGroup>
 
-          {/* Lists & Quotes */}
-          <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-0.5">
-            <button
-              type="button"
-              title="Bullet List"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n- ", "\n", "List item")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+          {/* Alignment */}
+          <TBGroup>
+            <TB title="Align Left" onClick={() => doFormat("justifyLeft")}>
+              <AlignLeft className="w-4 h-4" />
+            </TB>
+            <TB title="Align Center" onClick={() => doFormat("justifyCenter")}>
+              <AlignCenter className="w-4 h-4" />
+            </TB>
+            <TB title="Align Right" onClick={() => doFormat("justifyRight")}>
+              <AlignRight className="w-4 h-4" />
+            </TB>
+          </TBGroup>
+
+          {/* Lists & Blocks */}
+          <TBGroup>
+            <TB title="Bullet List" onClick={() => doFormat("insertUnorderedList")}>
               <List className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Numbered List"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n1. ", "\n", "Numbered item")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+            </TB>
+            <TB title="Numbered List" onClick={() => doFormat("insertOrderedList")}>
               <ListOrdered className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Blockquote"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n> ", "\n", "Quote text")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
+            </TB>
+            <TB title="Blockquote" onClick={() => doFormat("formatBlock", "blockquote")}>
               <Quote className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
+            </TB>
+            <TB
               title="Code Block"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n```javascript\n", "\n```\n", "// Code block")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
+              onClick={() =>
+                insertHTML(
+                  `<pre style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem;font-family:monospace;color:#7dd3fc;overflow-x:auto;margin:1rem 0;"><code>// paste your code here</code></pre>`
+                )
+              }
             >
               <FileCode className="w-4 h-4" />
-            </button>
-          </div>
+            </TB>
+            <TB
+              title="Horizontal Divider"
+              onClick={() => insertHTML("<hr style='border:none;border-top:1px solid #334155;margin:1.5rem 0;' />")}
+            >
+              <Minus className="w-4 h-4" />
+            </TB>
+          </TBGroup>
 
-          {/* Media Inserters */}
+          {/* Media */}
           <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-amber-500/30 gap-1">
             <button
               type="button"
               title="Insert / Upload Photo"
-              onMouseDown={(e) => e.preventDefault()}
+              onMouseDown={(e) => { savedRange.current = saveSelection(); e.preventDefault(); }}
               onClick={() => setShowImageModal(true)}
               className="flex items-center gap-1 px-2 py-1 bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 rounded text-xs font-bold transition-colors"
             >
               <ImageIcon className="w-3.5 h-3.5" /> + Photo
             </button>
-
             <button
               type="button"
               title="Insert / Upload Video"
-              onMouseDown={(e) => e.preventDefault()}
+              onMouseDown={(e) => { savedRange.current = saveSelection(); e.preventDefault(); }}
               onClick={() => setShowVideoModal(true)}
               className="flex items-center gap-1 px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded text-xs font-bold transition-colors"
             >
               <VideoIcon className="w-3.5 h-3.5" /> + Video
             </button>
-
-            <button
-              type="button"
+            <TB
               title="Insert Link"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => setShowLinkModal(true)}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
+              onClick={() => {
+                const sel = window.getSelection();
+                if (sel && sel.toString()) setLinkText(sel.toString());
+                setShowLinkModal(true);
+              }}
             >
               <LinkIcon className="w-4 h-4" />
-            </button>
+            </TB>
           </div>
 
-          {/* Callouts & Dividers */}
-          <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-0.5">
-            <button
-              type="button"
-              title="Insert Alert Box"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n> 💡 **PRO-TIP**: ", "\n", "Important note here")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
+          {/* Extras */}
+          <TBGroup>
+            <TB
+              title="Pro-Tip Callout"
+              onClick={() =>
+                insertHTML(
+                  `<blockquote style="border-left:4px solid #F59E0B;background:#1e293b;padding:1rem 1.2rem;border-radius:0 8px 8px 0;margin:1.5rem 0;color:#fde68a;">💡 <strong>PRO-TIP:</strong> Add your important note here.</blockquote>`
+                )
+              }
             >
               <AlertCircle className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              title="Horizontal Divider"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insertFormatting("\n---\n")}
-              className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-          </div>
+            </TB>
+          </TBGroup>
         </div>
 
-        {/* View Mode Toggle Switch */}
+        {/* View toggle */}
         <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 text-xs font-bold">
           <button
             type="button"
-            onClick={() => setMode("VISUAL")}
-            className={`flex items-center gap-1 px-3 py-1 rounded transition-colors ${
-              mode === "VISUAL" ? "bg-amber-400 text-slate-950" : "text-slate-400 hover:text-white"
-            }`}
+            onClick={() => { if (mode === "HTML") switchToVisual(); }}
+            className={`flex items-center gap-1 px-3 py-1 rounded transition-colors ${mode === "VISUAL" ? "bg-amber-400 text-slate-950" : "text-slate-400 hover:text-white"}`}
           >
             <Edit3 className="w-3.5 h-3.5" /> Editor
           </button>
           <button
             type="button"
-            onClick={() => setMode("MARKDOWN")}
-            className={`flex items-center gap-1 px-3 py-1 rounded transition-colors ${
-              mode === "MARKDOWN" ? "bg-amber-400 text-slate-950" : "text-slate-400 hover:text-white"
-            }`}
+            onClick={() => { if (mode === "VISUAL") switchToHTML(); }}
+            className={`flex items-center gap-1 px-3 py-1 rounded transition-colors ${mode === "HTML" ? "bg-amber-400 text-slate-950" : "text-slate-400 hover:text-white"}`}
           >
-            <Eye className="w-3.5 h-3.5" /> Preview
+            <Eye className="w-3.5 h-3.5" /> HTML
           </button>
         </div>
       </div>
 
-      {/* EDITOR AREA & LIVE STYLED PREVIEW */}
-      <div className="relative flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-800">
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value);
-            updateSelection();
-          }}
-          onSelect={updateSelection}
-          onClick={updateSelection}
-          onMouseUp={updateSelection}
-          onKeyUp={updateSelection}
-          onKeyDown={updateSelection}
-          onFocus={updateSelection}
-          style={{ minHeight }}
-          className={`w-full p-6 bg-[#071120] text-slate-100 font-mono text-sm leading-relaxed focus:outline-none resize-y border-none ${
-            mode === "MARKDOWN" ? "hidden" : "block"
-          }`}
-          placeholder="Type your article content here... Use the toolbar above to add photos, videos, headings (H1-H6), bold text, lists, and callouts."
+      {/* ── EDITOR AREA ─────────────────────────────────────────── */}
+      <div className="relative">
+        {/* contentEditable WYSIWYG */}
+        <div
+          ref={editorRef}
+          contentEditable={mode === "VISUAL"}
+          suppressContentEditableWarning
+          onInput={handleInput}
+          onMouseUp={handleEditorMouseUp}
+          onKeyUp={handleEditorKeyUp}
+          onFocus={handleEditorMouseUp}
+          style={{ minHeight, display: mode === "VISUAL" ? "block" : "none" }}
+          className="w-full p-6 bg-[#071120] text-slate-100 text-sm leading-relaxed focus:outline-none
+            prose prose-invert prose-headings:text-amber-400 prose-a:text-amber-300
+            prose-strong:text-white prose-code:text-amber-300 prose-blockquote:border-amber-400
+            max-w-none"
+          data-placeholder="Type your article here… Use the toolbar to add headings, bold, italic, photos, videos, and more."
         />
 
-        {mode === "MARKDOWN" && (
-          <div
+        {/* HTML source editor */}
+        {mode === "HTML" && (
+          <textarea
+            value={htmlSource}
+            onChange={(e) => setHtmlSource(e.target.value)}
             style={{ minHeight }}
-            className="w-full p-6 bg-[#071120] text-slate-200 text-sm leading-relaxed overflow-y-auto prose prose-invert max-w-none"
-          >
-            <div dangerouslySetInnerHTML={{ __html: value.replace(/\n/g, "<br/>") }} />
-          </div>
+            className="w-full p-6 bg-[#071120] text-emerald-300 font-mono text-sm leading-relaxed focus:outline-none resize-y border-none"
+            spellCheck={false}
+          />
         )}
       </div>
 
-      {/* FOOTER STATS BAR */}
+      {/* ── FOOTER STATS ────────────────────────────────────────── */}
       <div className="bg-[#0B1D3A] border-t border-slate-800 p-3 px-6 flex flex-wrap items-center justify-between text-xs text-slate-400 font-mono">
         <div className="flex items-center gap-6">
           <span>Words: <strong className="text-amber-400">{words}</strong></span>
           <span>Characters: <strong className="text-slate-200">{chars}</strong></span>
           <span>Est. Reading Time: <strong className="text-emerald-400">{readTime} min</strong></span>
         </div>
-        <div className="text-[11px] text-slate-500">Next-Gen Rich Media Editor V2.0</div>
+        <div className="text-[11px] text-slate-500">Next-Gen Rich Media Editor V3.0 · WYSIWYG</div>
       </div>
 
-      {/* UPLOAD / INSERT PHOTO MODAL */}
+      {/* ── PLACEHOLDER CSS ─────────────────────────────────────── */}
+      <style>{`
+        [contenteditable][data-placeholder]:empty:before {
+          content: attr(data-placeholder);
+          color: #475569;
+          pointer-events: none;
+          position: absolute;
+        }
+        [contenteditable] h1 { font-size:2rem;font-weight:700;margin:.75rem 0;color:#f59e0b; }
+        [contenteditable] h2 { font-size:1.6rem;font-weight:700;margin:.65rem 0;color:#fbbf24; }
+        [contenteditable] h3 { font-size:1.3rem;font-weight:600;margin:.5rem 0;color:#fcd34d; }
+        [contenteditable] h4 { font-size:1.1rem;font-weight:600;margin:.5rem 0;color:#fde68a; }
+        [contenteditable] h5 { font-size:1rem;font-weight:600;margin:.5rem 0;color:#fef3c7; }
+        [contenteditable] h6 { font-size:.9rem;font-weight:600;margin:.5rem 0;color:#fffbeb; }
+        [contenteditable] p  { margin:.5rem 0; }
+        [contenteditable] ul { list-style:disc;padding-left:1.5rem;margin:.5rem 0; }
+        [contenteditable] ol { list-style:decimal;padding-left:1.5rem;margin:.5rem 0; }
+        [contenteditable] blockquote { border-left:4px solid #f59e0b;padding:.5rem 1rem;margin:.75rem 0;background:#1e293b;border-radius:0 8px 8px 0;color:#fde68a; }
+        [contenteditable] a { color:#f59e0b;text-decoration:underline; }
+        [contenteditable] strong { color:#fff;font-weight:700; }
+        [contenteditable] em { font-style:italic; }
+        [contenteditable] code { background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;color:#f59e0b; }
+        [contenteditable] pre { background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem;font-family:monospace;color:#7dd3fc;overflow-x:auto;margin:1rem 0; }
+        [contenteditable] img { max-width:100%;border-radius:12px;margin:.75rem 0; }
+        [contenteditable] figure { margin:1.5rem 0;text-align:center; }
+        [contenteditable] figcaption { color:#94a3b8;font-size:.8rem;margin-top:.5rem; }
+        [contenteditable] hr { border:none;border-top:1px solid #334155;margin:1.5rem 0; }
+      `}</style>
+
+      {/* ── IMAGE MODAL ─────────────────────────────────────────── */}
       {showImageModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#0B1D3A] border border-amber-500/30 w-full max-w-md p-6 rounded-2xl shadow-2xl space-y-4">
@@ -469,17 +541,10 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                 <X className="w-4 h-4" />
               </button>
             </div>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">Option 1: Upload Image File</label>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -488,48 +553,21 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                   <Upload className="w-4 h-4" /> Click to Browse & Upload Image
                 </button>
               </div>
-
-              <div className="flex items-center gap-2 text-slate-500 text-xs my-2">
-                <div className="flex-1 h-px bg-slate-800"></div>
-                <span>OR</span>
-                <div className="flex-1 h-px bg-slate-800"></div>
+              <div className="flex items-center gap-2 text-slate-500 text-xs">
+                <div className="flex-1 h-px bg-slate-800"></div><span>OR</span><div className="flex-1 h-px bg-slate-800"></div>
               </div>
-
               <form onSubmit={handleAddImageUrl} className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: Image URL</label>
-                  <input
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white"
-                  />
+                  <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Alt Text / Caption</label>
-                  <input
-                    type="text"
-                    value={imageCaption}
-                    onChange={(e) => setImageCaption(e.target.value)}
-                    placeholder="e.g. Contractor performing occupancy inspection"
-                    className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white"
-                  />
+                  <input type="text" value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} placeholder="Describe the image…" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowImageModal(false)}
-                    className="px-3 py-1.5 text-xs text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg"
-                  >
-                    Insert Image
-                  </button>
+                  <button type="button" onClick={() => setShowImageModal(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white">Cancel</button>
+                  <button type="submit" className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg">Insert Image</button>
                 </div>
               </form>
             </div>
@@ -537,7 +575,7 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
         </div>
       )}
 
-      {/* UPLOAD / INSERT VIDEO MODAL */}
+      {/* ── VIDEO MODAL ─────────────────────────────────────────── */}
       {showVideoModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#0B1D3A] border border-purple-500/30 w-full max-w-md p-6 rounded-2xl shadow-2xl space-y-4">
@@ -549,17 +587,10 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                 <X className="w-4 h-4" />
               </button>
             </div>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">Option 1: Upload Video File (MP4, WebM)</label>
-                <input
-                  type="file"
-                  ref={videoFileInputRef}
-                  accept="video/*"
-                  onChange={handleVideoUpload}
-                  className="hidden"
-                />
+                <input type="file" ref={videoFileInputRef} accept="video/*" onChange={handleVideoUpload} className="hidden" />
                 <button
                   type="button"
                   onClick={() => videoFileInputRef.current?.click()}
@@ -568,38 +599,21 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                   <Upload className="w-4 h-4" /> Click to Browse & Upload Video
                 </button>
               </div>
-
-              <div className="flex items-center gap-2 text-slate-500 text-xs my-2">
-                <div className="flex-1 h-px bg-slate-800"></div>
-                <span>OR</span>
-                <div className="flex-1 h-px bg-slate-800"></div>
+              <div className="flex items-center gap-2 text-slate-500 text-xs">
+                <div className="flex-1 h-px bg-slate-800"></div><span>OR</span><div className="flex-1 h-px bg-slate-800"></div>
               </div>
-
               <form onSubmit={handleAddVideoUrl} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: YouTube or Video URL</label>
-                  <input
-                    type="url"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder="https://www.youtube.com/watch?v=..."
-                    className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white"
-                  />
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: YouTube / Vimeo / Video URL</label>
+                  <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Title (optional)</label>
+                  <input type="text" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)} placeholder="Video title…" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowVideoModal(false)}
-                    className="px-3 py-1.5 text-xs text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-1.5 bg-purple-500 text-white font-bold text-xs rounded-lg"
-                  >
-                    Insert Video
-                  </button>
+                  <button type="button" onClick={() => setShowVideoModal(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white">Cancel</button>
+                  <button type="submit" className="px-4 py-1.5 bg-purple-500 text-white font-bold text-xs rounded-lg">Insert Video</button>
                 </div>
               </form>
             </div>
@@ -607,7 +621,7 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
         </div>
       )}
 
-      {/* INSERT LINK MODAL */}
+      {/* ── LINK MODAL ──────────────────────────────────────────── */}
       {showLinkModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#0B1D3A] border border-slate-700 w-full max-w-md p-6 rounded-2xl shadow-2xl space-y-4">
@@ -619,43 +633,18 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                 <X className="w-4 h-4" />
               </button>
             </div>
-
             <form onSubmit={handleAddLink} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Link Display Text</label>
-                <input
-                  type="text"
-                  value={linkText}
-                  onChange={(e) => setLinkText(e.target.value)}
-                  placeholder="e.g. FHA Guidelines Handbook"
-                  className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white"
-                />
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Link Text (leave blank to use selection)</label>
+                <input type="text" value={linkText} onChange={(e) => setLinkText(e.target.value)} placeholder="e.g. FHA Guidelines Handbook" className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Target URL</label>
-                <input
-                  type="url"
-                  required
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white"
-                />
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Target URL *</label>
+                <input type="url" required value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 bg-[#071120] border border-slate-700 rounded-lg text-xs text-white" />
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowLinkModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-400 hover:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg"
-                >
-                  Insert Link
-                </button>
+                <button type="button" onClick={() => setShowLinkModal(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-white">Cancel</button>
+                <button type="submit" className="px-4 py-1.5 bg-amber-400 text-slate-950 font-bold text-xs rounded-lg">Insert Link</button>
               </div>
             </form>
           </div>
