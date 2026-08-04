@@ -22,5 +22,8 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "fortresspreservationllc"
     }
-  ]
+  ],
+  "build": {
+    "command": "npm run build && npx opennextjs-cloudflare build"
+  }
 }
