@@ -40,7 +40,6 @@ Requirements:
       model: openai("gpt-4-turbo"),
       system: systemPrompt,
       prompt: `Generate the ${contentType} now. Make it institutional-grade quality.`,
-      maxTokens: 4000,
       temperature: 0.7,
     })
 

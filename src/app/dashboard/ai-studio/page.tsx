@@ -77,7 +77,7 @@ export default function AIStudioPage() {
       })
 
       if (result.success) {
-        alert(\`Article successfully saved as \${status}!\`)
+        alert(`Article successfully saved as ${status}!`)
         setStep("SETUP")
         setGeneratedArticle("")
         setResearchData(null)
@@ -135,7 +135,7 @@ export default function AIStudioPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Content Type</Label>
-                    <Select value={contentType} onValueChange={setContentType}>
+                    <Select value={contentType} onValueChange={(val) => setContentType(val as string)}>
                       <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="guide">Industry Guide</SelectItem>
@@ -148,7 +148,7 @@ export default function AIStudioPage() {
 
                   <div className="space-y-2">
                     <Label>Writing Style</Label>
-                    <Select value={style} onValueChange={setStyle}>
+                    <Select value={style} onValueChange={(val) => setStyle(val as string)}>
                       <SelectTrigger><SelectValue placeholder="Select style" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="professional">Professional</SelectItem>
@@ -252,7 +252,7 @@ export default function AIStudioPage() {
                 <div>
                   <h4 className="text-sm font-semibold mb-2">Target Keywords</h4>
                   <div className="flex flex-wrap gap-2">
-                    {researchData.keywords?.map((kw: string) => (
+                    {researchData.keywords?.map((kw: any) => (
                       <span key={kw} className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs font-medium">
                         {kw}
                       </span>
@@ -262,7 +262,7 @@ export default function AIStudioPage() {
                 <div>
                   <h4 className="text-sm font-semibold mb-2">Content Gaps Filled</h4>
                   <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
-                    {researchData.contentGaps?.map((gap: string, i: number) => (
+                    {researchData.contentGaps?.map((gap: any, i: number) => (
                       <li key={i}>{gap}</li>
                     ))}
                   </ul>
