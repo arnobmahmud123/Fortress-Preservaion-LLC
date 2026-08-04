@@ -548,25 +548,29 @@ export default function RichTextEditor({
       <style>{`
         [contenteditable][data-placeholder]:empty:before {
           content: attr(data-placeholder);
-          color: #475569;
+          color: #64748b !important;
           pointer-events: none;
           position: absolute;
         }
-        [contenteditable] h1 { font-size:2rem;font-weight:700;margin:.75rem 0;color:#f59e0b; }
-        [contenteditable] h2 { font-size:1.6rem;font-weight:700;margin:.65rem 0;color:#fbbf24; }
-        [contenteditable] h3 { font-size:1.3rem;font-weight:600;margin:.5rem 0;color:#fcd34d; }
-        [contenteditable] h4 { font-size:1.1rem;font-weight:600;margin:.5rem 0;color:#fde68a; }
-        [contenteditable] h5 { font-size:1rem;font-weight:600;margin:.5rem 0;color:#fef3c7; }
-        [contenteditable] h6 { font-size:.9rem;font-weight:600;margin:.5rem 0;color:#fffbeb; }
-        [contenteditable] p  { margin:.5rem 0; }
-        [contenteditable] ul { list-style:disc;padding-left:1.5rem;margin:.5rem 0; }
-        [contenteditable] ol { list-style:decimal;padding-left:1.5rem;margin:.5rem 0; }
-        [contenteditable] blockquote { border-left:4px solid #f59e0b;padding:.5rem 1rem;margin:.75rem 0;background:#1e293b;border-radius:0 8px 8px 0;color:#fde68a; }
-        [contenteditable] a { color:#f59e0b;text-decoration:underline; }
-        [contenteditable] strong { color:#fff;font-weight:700; }
+        [contenteditable] {
+          color: #f1f5f9 !important;
+        }
+        [contenteditable] h1 { font-size:2rem;font-weight:700;margin:.75rem 0;color:#f59e0b !important; }
+        [contenteditable] h2 { font-size:1.6rem;font-weight:700;margin:.65rem 0;color:#fbbf24 !important; }
+        [contenteditable] h3 { font-size:1.3rem;font-weight:600;margin:.5rem 0;color:#fcd34d !important; }
+        [contenteditable] h4 { font-size:1.1rem;font-weight:600;margin:.5rem 0;color:#fde68a !important; }
+        [contenteditable] h5 { font-size:1rem;font-weight:600;margin:.5rem 0;color:#fef3c7 !important; }
+        [contenteditable] h6 { font-size:.9rem;font-weight:600;margin:.5rem 0;color:#fffbeb !important; }
+        [contenteditable] p  { margin:.5rem 0; color:#e2e8f0 !important; }
+        [contenteditable] ul { list-style:disc;padding-left:1.5rem;margin:.5rem 0; color:#e2e8f0 !important; }
+        [contenteditable] ol { list-style:decimal;padding-left:1.5rem;margin:.5rem 0; color:#e2e8f0 !important; }
+        [contenteditable] li { color:#e2e8f0 !important; }
+        [contenteditable] blockquote { border-left:4px solid #f59e0b;padding:.5rem 1rem;margin:.75rem 0;background:#1e293b;border-radius:0 8px 8px 0;color:#fde68a !important; }
+        [contenteditable] a { color:#f59e0b !important;text-decoration:underline; }
+        [contenteditable] strong { color:#fff !important;font-weight:700; }
         [contenteditable] em { font-style:italic; }
-        [contenteditable] code { background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;color:#f59e0b; }
-        [contenteditable] pre { background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem;font-family:monospace;color:#7dd3fc;overflow-x:auto;margin:1rem 0; }
+        [contenteditable] code { background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;color:#f59e0b !important; }
+        [contenteditable] pre { background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem;font-family:monospace;color:#7dd3fc !important;overflow-x:auto;margin:1rem 0; }
         [contenteditable] img { max-width:100%;border-radius:12px;margin:.75rem 0; }
         [contenteditable] figure { margin:1.5rem 0;text-align:center; }
         [contenteditable] figcaption { color:#94a3b8;font-size:.8rem;margin-top:.5rem; }
