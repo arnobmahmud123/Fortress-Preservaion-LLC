@@ -16,9 +16,6 @@ import {
   ListOrdered,
   Quote,
   Code,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
   Image as ImageIcon,
   Video as VideoIcon,
   Link as LinkIcon,
@@ -26,10 +23,8 @@ import {
   Eye,
   Edit3,
   Upload,
-  Plus,
   X,
   FileCode,
-  Table as TableIcon,
   Minus
 } from "lucide-react";
 
@@ -41,6 +36,8 @@ interface RichTextEditorProps {
 
 export default function RichTextEditor({ value, onChange, minHeight = "450px" }: RichTextEditorProps) {
   const [mode, setMode] = useState<"VISUAL" | "MARKDOWN">("VISUAL");
+  const [selection, setSelection] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+
   const [showImageModal, setShowImageModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -60,24 +57,40 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Helper to insert markdown or text at cursor position
+  // Track cursor position & selection
+  const updateSelection = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      setSelection({
+        start: textarea.selectionStart,
+        end: textarea.selectionEnd,
+      });
+    }
+  };
+
+  // Insert formatting at cursor position or selection
   const insertFormatting = (prefix: string, suffix: string = "", defaultText: string = "") => {
     const textarea = textareaRef.current;
-    if (!textarea) return;
+    const start = selection.start;
+    const end = selection.end;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = value.substring(start, end) || defaultText;
+    const currentVal = value || "";
+    const selectedText = currentVal.substring(start, end) || defaultText;
 
     const replacement = `${prefix}${selectedText}${suffix}`;
-    const newValue = value.substring(0, start) + replacement + value.substring(end);
+    const newValue = currentVal.substring(0, start) + replacement + currentVal.substring(end);
 
     onChange(newValue);
 
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length + selectedText.length);
-    }, 50);
+    const newCursorPos = start + prefix.length + selectedText.length;
+    setSelection({ start: newCursorPos, end: newCursorPos });
+
+    if (textarea) {
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 30);
+    }
   };
 
   // Upload Photo File Handler
@@ -160,7 +173,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Heading 1"
-              onClick={() => insertFormatting("\n# ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n# ", "\n", "Heading 1")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
             >
               <Heading1 className="w-4 h-4" />
@@ -168,7 +182,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Heading 2"
-              onClick={() => insertFormatting("\n## ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n## ", "\n", "Heading 2")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
             >
               <Heading2 className="w-4 h-4" />
@@ -176,7 +191,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Heading 3"
-              onClick={() => insertFormatting("\n### ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n### ", "\n", "Heading 3")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
             >
               <Heading3 className="w-4 h-4" />
@@ -184,7 +200,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Heading 4"
-              onClick={() => insertFormatting("\n#### ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n#### ", "\n", "Heading 4")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
             >
               <Heading4 className="w-4 h-4" />
@@ -192,7 +209,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Heading 5"
-              onClick={() => insertFormatting("\n##### ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n##### ", "\n", "Heading 5")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
             >
               <Heading5 className="w-4 h-4" />
@@ -200,7 +218,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Heading 6"
-              onClick={() => insertFormatting("\n###### ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n###### ", "\n", "Heading 6")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors text-xs font-bold"
             >
               <Heading6 className="w-4 h-4" />
@@ -211,16 +230,18 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
           <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-0.5">
             <button
               type="button"
-              title="Bold (Ctrl+B)"
-              onClick={() => insertFormatting("**", "**")}
+              title="Bold"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("**", "**", "bold text")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <Bold className="w-4 h-4" />
             </button>
             <button
               type="button"
-              title="Italic (Ctrl+I)"
-              onClick={() => insertFormatting("*", "*")}
+              title="Italic"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("*", "*", "italic text")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <Italic className="w-4 h-4" />
@@ -228,7 +249,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Underline"
-              onClick={() => insertFormatting("<u>", "</u>")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("<u>", "</u>", "underlined text")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <Underline className="w-4 h-4" />
@@ -236,7 +258,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Strikethrough"
-              onClick={() => insertFormatting("~~", "~~")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("~~", "~~", "strikethrough text")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <Strikethrough className="w-4 h-4" />
@@ -244,7 +267,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Inline Code"
-              onClick={() => insertFormatting("`", "`")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("`", "`", "code")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <Code className="w-4 h-4" />
@@ -256,7 +280,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Bullet List"
-              onClick={() => insertFormatting("\n- ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n- ", "\n", "List item")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <List className="w-4 h-4" />
@@ -264,7 +289,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Numbered List"
-              onClick={() => insertFormatting("\n1. ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n1. ", "\n", "Numbered item")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <ListOrdered className="w-4 h-4" />
@@ -272,7 +298,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Blockquote"
-              onClick={() => insertFormatting("\n> ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n> ", "\n", "Quote text")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <Quote className="w-4 h-4" />
@@ -280,7 +307,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Code Block"
-              onClick={() => insertFormatting("\n```javascript\n", "\n```\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n```javascript\n", "\n```\n", "// Code block")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <FileCode className="w-4 h-4" />
@@ -292,6 +320,7 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Insert / Upload Photo"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setShowImageModal(true)}
               className="flex items-center gap-1 px-2 py-1 bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 rounded text-xs font-bold transition-colors"
             >
@@ -301,6 +330,7 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Insert / Upload Video"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setShowVideoModal(true)}
               className="flex items-center gap-1 px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded text-xs font-bold transition-colors"
             >
@@ -310,6 +340,7 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Insert Link"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setShowLinkModal(true)}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
@@ -322,7 +353,8 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Insert Alert Box"
-              onClick={() => insertFormatting("\n> 💡 **PRO-TIP**: ", "\n")}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => insertFormatting("\n> 💡 **PRO-TIP**: ", "\n", "Important note here")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
               <AlertCircle className="w-4 h-4" />
@@ -330,6 +362,7 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             <button
               type="button"
               title="Horizontal Divider"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => insertFormatting("\n---\n")}
               className="p-1.5 hover:bg-amber-400/20 hover:text-amber-400 text-slate-300 rounded transition-colors"
             >
@@ -361,21 +394,30 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
         </div>
       </div>
 
-      {/* EDITOR AREA */}
-      <div className="relative">
-        {mode === "VISUAL" ? (
-          <textarea
-            ref={textareaRef}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            style={{ minHeight }}
-            className="w-full p-6 bg-[#071120] text-slate-100 font-mono text-sm leading-relaxed focus:outline-none resize-y border-none"
-            placeholder="Type your article content here... Use the toolbar above to add photos, videos, headings, bold text, lists, and callouts."
-          />
-        ) : (
+      {/* EDITOR AREA & LIVE STYLED PREVIEW */}
+      <div className="relative flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-800">
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            updateSelection();
+          }}
+          onSelect={updateSelection}
+          onClick={updateSelection}
+          onKeyUp={updateSelection}
+          onKeyDown={updateSelection}
+          style={{ minHeight }}
+          className={`w-full p-6 bg-[#071120] text-slate-100 font-mono text-sm leading-relaxed focus:outline-none resize-y border-none ${
+            mode === "MARKDOWN" ? "hidden" : "block"
+          }`}
+          placeholder="Type your article content here... Use the toolbar above to add photos, videos, headings (H1-H6), bold text, lists, and callouts."
+        />
+
+        {mode === "MARKDOWN" && (
           <div
             style={{ minHeight }}
-            className="p-6 bg-[#071120] text-slate-200 text-sm leading-relaxed overflow-y-auto prose prose-invert max-w-none"
+            className="w-full p-6 bg-[#071120] text-slate-200 text-sm leading-relaxed overflow-y-auto prose prose-invert max-w-none"
           >
             <div dangerouslySetInnerHTML={{ __html: value.replace(/\n/g, "<br/>") }} />
           </div>
@@ -406,7 +448,6 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             </div>
 
             <div className="space-y-4">
-              {/* Option A: Upload Local File */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">Option 1: Upload Image File</label>
                 <input
@@ -431,7 +472,6 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                 <div className="flex-1 h-px bg-slate-800"></div>
               </div>
 
-              {/* Option B: Insert URL */}
               <form onSubmit={handleAddImageUrl} className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: Image URL</label>
@@ -488,7 +528,6 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
             </div>
 
             <div className="space-y-4">
-              {/* Local Video Upload */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">Option 1: Upload Video File (MP4, WebM)</label>
                 <input
@@ -513,7 +552,6 @@ export default function RichTextEditor({ value, onChange, minHeight = "450px" }:
                 <div className="flex-1 h-px bg-slate-800"></div>
               </div>
 
-              {/* YouTube / Direct Video URL */}
               <form onSubmit={handleAddVideoUrl} className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Option 2: YouTube or Video URL</label>
