@@ -1,5 +1,242 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import SiteHeader from "@/components/public/SiteHeader";
+import SiteFooter from "@/components/public/SiteFooter";
+
 export default function ContractorsPage() {
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    companyName: "",
+    email: "",
+    phone: "",
+    experience: "",
+    services: "",
+    serviceAreas: "",
+    licenses: "",
+    insurance: "",
+    additionalInfo: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
-    <div dangerouslySetInnerHTML={{ __html: "\n<header class=\"site-header\" role=\"banner\">\n  <div class=\"container header-inner\">\n    <a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>\n    <button class=\"mobile-menu-btn\" aria-label=\"Toggle navigation menu\" aria-expanded=\"false\"><span></span><span></span><span></span></button>\n    <nav class=\"nav-links\" role=\"navigation\" aria-label=\"Main navigation\">\n      <a href=\"/\" class=\"nav-link\">Home</a><a href=\"/services\" class=\"nav-link\">Services</a><a href=\"/portfolio\" class=\"nav-link\">Portfolio</a><a href=\"/clients\" class=\"nav-link\">For Clients</a><a href=\"/contractors\" class=\"nav-link active\">For Contractors</a><a href=\"/about\" class=\"nav-link\">About</a><a href=\"/blog\" class=\"nav-link\">Blog</a><a href=\"/contact\" class=\"nav-link\">Contact</a><a href=\"/contact\" class=\"btn btn-primary btn-sm\">Request a Quote</a>\n    </nav>\n  </div>\n</header>\n<section class=\"page-header\"><div class=\"container\"><h1 class=\"fade-in\">For Contractors</h1><p class=\"fade-in\">Join the Fortress Preservation vendor network and access consistent work orders across 47 states.</p></div></section>\n\n<section class=\"section\">\n  <div class=\"container\">\n    <div class=\"text-center fade-in\"><span class=\"section-label\">Why Partner With Us</span><h2 class=\"section-title\">Build Your Business with Fortress</h2><p class=\"section-subtitle\" style=\"margin-left:auto;margin-right:auto;\">We are actively growing our network of qualified preservation contractors. If you have experience in property preservation, we want to talk.</p></div>\n    <div class=\"services-grid\">\n      <div class=\"service-card fade-in\"><div class=\"service-icon\">📈</div><h3>Consistent Work Flow</h3><p>Steady stream of work orders from our institutional client base. Year-round volume from mortgage servicers.</p></div>\n      <div class=\"service-card fade-in\"><div class=\"service-icon\">💵</div><h3>Competitive Compensation</h3><p>Transparent pricing with prompt payment terms. Net-15 options for qualified contractors.</p></div>\n      <div class=\"service-card fade-in\"><div class=\"service-icon\">📱</div><h3>Digital Workflow</h3><p>Mobile-first platform for work order assignment, photo documentation, and digital invoicing.</p></div>\n      <div class=\"service-card fade-in\"><div class=\"service-icon\">🎯</div><h3>Local Market Focus</h3><p>We assign work based on your service area. Build your business in the markets you know best.</p></div>\n    </div>\n  </div>\n</section>\n\n<section class=\"section section-light\" id=\"contractor-form\">\n  <div class=\"container container-narrow\">\n    <div class=\"text-center fade-in\"><span class=\"section-label\">Apply Now</span><h2 class=\"section-title\">Contractor Registration</h2><p class=\"section-subtitle\" style=\"margin-left:auto;margin-right:auto;\">Complete the form below to begin the qualification process. We review every application within 5 business days.</p></div>\n    <div class=\"form-container fade-in\" style=\"margin-top:var(--2xl);\">\n      <form data-validate>\n        <div class=\"form-fields\">\n          <div class=\"form-grid\">\n            <div class=\"form-group\"><label class=\"form-label\" for=\"con\">Full Name *</label><input type=\"text\" id=\"con\" class=\"form-input\" required><div class=\"form-error\"></div></div>\n            <div class=\"form-group\"><label class=\"form-label\" for=\"cco2\">Company Name *</label><input type=\"text\" id=\"cco2\" class=\"form-input\" required><div class=\"form-error\"></div></div>\n            <div class=\"form-group\"><label class=\"form-label\" for=\"ce2\">Email *</label><input type=\"email\" id=\"ce2\" class=\"form-input\" required><div class=\"form-error\"></div></div>\n            <div class=\"form-group\"><label class=\"form-label\" for=\"cp2\">Phone *</label><input type=\"tel\" id=\"cp2\" class=\"form-input\" required><div class=\"form-error\"></div></div>\n            <div class=\"form-group\"><label class=\"form-label\" for=\"exp\">Experience *</label><select id=\"exp\" class=\"form-select\" required><option value=\"\">Select...</option><option value=\"0-1\">&lt;1 year</option><option value=\"1-3\">1–3 years</option><option value=\"3-5\">3–5 years</option><option value=\"5-10\">5–10 years</option><option value=\"10+\">10+ years</option></select><div class=\"form-error\"></div></div>\n            <div class=\"form-group\"><label class=\"form-label\" for=\"serv\">Services *</label><select id=\"serv\" class=\"form-select\" required><option value=\"\">Select...</option><option value=\"inspections\">Inspections</option><option value=\"preservation\">Preservation</option><option value=\"both\">Both</option><option value=\"reo\">REO Maintenance</option><option value=\"all\">Full Service</option></select><div class=\"form-error\"></div></div>\n            <div class=\"form-group full-width\"><label class=\"form-label\" for=\"areas\">Service Areas *</label><input type=\"text\" id=\"areas\" class=\"form-input\" placeholder=\"e.g., Ohio (Columbus, Cleveland), Kentucky...\" required><div class=\"form-error\"></div></div>\n            <div class=\"form-group full-width\"><label class=\"form-label\" for=\"certs\">Certifications &amp; Licenses</label><input type=\"text\" id=\"certs\" class=\"form-input\" placeholder=\"e.g., General Contractor License, EPA Lead-Safe Certified\"></div>\n            <div class=\"form-group full-width\"><label class=\"form-label\" for=\"ins\">Insurance Coverage</label><textarea id=\"ins\" class=\"form-textarea\" placeholder=\"Describe your current insurance coverage and limits...\"></textarea></div>\n            <div class=\"form-group full-width\"><label class=\"form-label\" for=\"add\">Additional Information</label><textarea id=\"add\" class=\"form-textarea\" placeholder=\"Experience with investor guidelines, capacity...\"></textarea></div>\n            <div class=\"form-group full-width\"><label class=\"form-checkbox\"><input type=\"checkbox\" required><span>I confirm the information is accurate and I have necessary licenses and insurance. <span style=\"color:var(--error);\">*</span></span></label><div class=\"form-error\"></div></div>\n          </div>\n          <div class=\"text-center\" style=\"margin-top:var(--lg);\"><button type=\"submit\" class=\"btn btn-primary btn-lg\">Submit Application</button></div>\n        </div>\n        <div class=\"form-success\"><div class=\"form-success-icon\">✓</div><h3>Application Received</h3><p>Thank you. Our vendor management team will contact you within 5 business days.</p></div>\n      </form>\n    </div>\n  </div>\n</section>\n\n<footer class=\"site-footer\" role=\"contentinfo\"><div class=\"container\"><div class=\"footer-grid\"><div class=\"footer-brand\"><a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class=\"footer-description\">Institutional-grade property preservation and REO field services for mortgage servicers, banks, and asset managers nationwide.</p></div>\n<div><h4 class=\"footer-heading\">Quick Links</h4><ul class=\"footer-links\"><li><a href=\"/\">Home</a></li><li><a href=\"/services\">Services</a></li><li><a href=\"/portfolio\">Portfolio</a></li><li><a href=\"/about\">About Us</a></li><li><a href=\"/contact\">Contact</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Services</h4><ul class=\"footer-links\"><li><a href=\"/services\">Property Inspections</a></li><li><a href=\"/services\">Preservation &amp; Winterization</a></li><li><a href=\"/services\">REO Management</a></li><li><a href=\"/services\">Compliance &amp; Audit</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Contact Us</h4><ul class=\"footer-contact\"><li><span class=\"icon\">📞</span><span>+1 (659) 213-7866</span></li><li><span class=\"icon\">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class=\"icon\">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div></div>\n<div class=\"footer-bottom\"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class=\"footer-legal\"><a href=\"#\">Privacy Policy</a><a href=\"#\">Terms of Service</a><a href=\"#\">Compliance Disclosures</a></div></div></div></footer>\n\n" }} />
-  )
+    <div className="min-h-screen bg-[#071120] text-slate-100 font-sans">
+      <SiteHeader />
+
+      {/* Page Header */}
+      <section className="py-16 bg-gradient-to-b from-[#0B1D3A] to-[#071120] border-b border-slate-800">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <span className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold rounded-full uppercase tracking-widest mb-4">
+            Vendor Contractor Network
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Join the Fortress Contractor Network
+          </h1>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            Expand your field preservation business with consistent work order volume across 47 covered states.
+          </p>
+        </div>
+      </section>
+
+      {/* Contractor Benefits */}
+      <section className="py-16 container mx-auto px-4 max-w-6xl">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h2 className="text-3xl font-extrabold text-white mb-3">Build Your Business with Fortress</h2>
+          <p className="text-slate-400 text-sm">
+            We actively onboard qualified property preservation contractors, field inspectors, and REO maintenance crews.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">📈</div>
+            <h3 className="text-lg font-bold text-white mb-2">Consistent Volume</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              Year-round work orders assigned directly to your local coverage zone.
+            </p>
+          </div>
+
+          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">💵</div>
+            <h3 className="text-lg font-bold text-white mb-2">Prompt Pay Terms</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              Competitive rate matrix with Net-15 & Net-30 payment guarantees.
+            </p>
+          </div>
+
+          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">📱</div>
+            <h3 className="text-lg font-bold text-white mb-2">Mobile Field App</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              Mobile app for real-time photo uploads, PCR creation, and instant invoicing.
+            </p>
+          </div>
+
+          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">🎯</div>
+            <h3 className="text-lg font-bold text-white mb-2">Dedicated Support</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              Regional vendor coordinators to assist with bid approvals and compliance.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTRACTOR REGISTRATION FORM */}
+      <section className="py-16 bg-[#09172E] border-y border-slate-800" id="contractor-form">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="text-center mb-10">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block mb-2">Vendor Application</span>
+            <h2 className="text-3xl font-extrabold text-white mb-2">Contractor Registration</h2>
+            <p className="text-slate-400 text-sm">
+              Complete the qualification form below. Our vendor management team reviews all applications within 5 business days.
+            </p>
+          </div>
+
+          <div className="bg-[#0B1D3A] border border-slate-800 p-8 rounded-2xl shadow-xl">
+            {submitted ? (
+              <div className="text-center py-12 space-y-4">
+                <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center justify-center text-3xl mx-auto">
+                  ✓
+                </div>
+                <h3 className="text-2xl font-bold text-white">Vendor Application Received</h3>
+                <p className="text-slate-300 text-sm max-w-md mx-auto">
+                  Thank you, <span className="text-amber-400 font-semibold">{formData.fullName}</span> ({formData.companyName}). Our vendor onboarding team will review your application and contact you shortly.
+                </p>
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors mt-4"
+                >
+                  Submit Another Application
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                      placeholder="e.g. Marcus Miller"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Company Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.companyName}
+                      onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                      placeholder="e.g. Apex Preservation LLC"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                      placeholder="marcus@apexpreservation.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Phone Number *</label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Preservation Experience *</label>
+                    <select
+                      required
+                      value={formData.experience}
+                      onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                    >
+                      <option value="">Select experience...</option>
+                      <option value="1-3">1 – 3 years</option>
+                      <option value="3-5">3 – 5 years</option>
+                      <option value="5-10">5 – 10 years</option>
+                      <option value="10+">10+ years</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Primary Services Offered *</label>
+                    <select
+                      required
+                      value={formData.services}
+                      onChange={(e) => setFormData({ ...formData, services: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                    >
+                      <option value="">Select service...</option>
+                      <option value="inspections">Occupancy & Condition Inspections</option>
+                      <option value="preservation">Preservation & Winterization</option>
+                      <option value="reo">REO Repair & Trashouts</option>
+                      <option value="full">Full Spectrum Vendor</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Coverage Counties / Zip Codes *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.serviceAreas}
+                    onChange={(e) => setFormData({ ...formData, serviceAreas: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                    placeholder="e.g. Mecklenburg NC, York SC, Gaston NC (Radius 50 miles)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Insurance & Licenses</label>
+                  <textarea
+                    rows={3}
+                    value={formData.insurance}
+                    onChange={(e) => setFormData({ ...formData, insurance: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                    placeholder="General Liability policy limits ($1M+ required), Workers' Comp details, EPA Lead-Safe certs..."
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 uppercase tracking-wider text-sm transition-all shadow-lg shadow-amber-500/20"
+                >
+                  Submit Vendor Application
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <SiteFooter />
+    </div>
+  );
 }

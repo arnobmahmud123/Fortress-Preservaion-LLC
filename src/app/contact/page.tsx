@@ -1,5 +1,153 @@
+"use client";
+
+import { useState } from "react";
+import SiteHeader from "@/components/public/SiteHeader";
+import SiteFooter from "@/components/public/SiteFooter";
+
 export default function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
-    <div dangerouslySetInnerHTML={{ __html: "\n<header class=\"site-header\" role=\"banner\">\n  <div class=\"container header-inner\">\n    <a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>\n    <button class=\"mobile-menu-btn\" aria-label=\"Toggle navigation menu\" aria-expanded=\"false\"><span></span><span></span><span></span></button>\n    <nav class=\"nav-links\" role=\"navigation\" aria-label=\"Main navigation\">\n      <a href=\"/\" class=\"nav-link\">Home</a><a href=\"/services\" class=\"nav-link\">Services</a><a href=\"/portfolio\" class=\"nav-link\">Portfolio</a><a href=\"/clients\" class=\"nav-link\">For Clients</a><a href=\"/contractors\" class=\"nav-link\">For Contractors</a><a href=\"/about\" class=\"nav-link\">About</a><a href=\"/blog\" class=\"nav-link\">Blog</a><a href=\"/contact\" class=\"nav-link active\">Contact</a><a href=\"/contact\" class=\"btn btn-primary btn-sm\">Request a Quote</a>\n    </nav>\n  </div>\n</header>\n<section class=\"page-header\"><div class=\"container\"><h1 class=\"fade-in\">Contact Us</h1><p class=\"fade-in\">Ready to elevate your property preservation operations? Reach out to our team.</p></div></section>\n\n<section class=\"section\">\n  <div class=\"container\">\n    <div class=\"services-grid fade-in\" style=\"margin-bottom:var(--3xl);\">\n      <div class=\"service-card text-center\"><div class=\"service-icon\" style=\"margin:0 auto var(--lg);\">📞</div><h3>Phone</h3><p style=\"font-size:1.125rem;color:var(--primary);font-weight:600;margin-bottom:0;\">+1 (659) 213-7866</p><p style=\"font-size:.875rem;\">Mon–Fri, 8am–6pm EST</p></div>\n      <div class=\"service-card text-center\"><div class=\"service-icon\" style=\"margin:0 auto var(--lg);\">✉️</div><h3>Email</h3><p style=\"font-size:1.125rem;color:var(--primary);font-weight:600;margin-bottom:0;\">info@fortresspreservationllc.com</p><p style=\"font-size:.875rem;\">We respond within 24 hours</p></div>\n      <div class=\"service-card text-center\"><div class=\"service-icon\" style=\"margin:0 auto var(--lg);\">📍</div><h3>Office</h3><p style=\"font-size:1.125rem;color:var(--primary);font-weight:600;margin-bottom:0;\">123 Commerce Drive, Suite 400</p><p style=\"font-size:.875rem;\">Charlotte, NC 28202</p></div>\n    </div>\n    <div class=\"container-narrow\" style=\"margin:0 auto;\">\n      <div class=\"text-center fade-in\"><span class=\"section-label\">Send a Message</span><h2 class=\"section-title\">General Inquiry</h2><p class=\"section-subtitle\" style=\"margin-left:auto;margin-right:auto;\">Have a question or need more information? Fill out the form below and a team member will follow up within one business day.</p></div>\n      <div class=\"form-container fade-in\" style=\"margin-top:var(--xl);\">\n        <form data-validate>\n          <div class=\"form-fields\">\n            <div class=\"form-grid\">\n              <div class=\"form-group\"><label class=\"form-label\" for=\"cname\">Full Name *</label><input type=\"text\" id=\"cname\" class=\"form-input\" required><div class=\"form-error\"></div></div>\n              <div class=\"form-group\"><label class=\"form-label\" for=\"ccomp\">Company</label><input type=\"text\" id=\"ccomp\" class=\"form-input\"></div>\n              <div class=\"form-group\"><label class=\"form-label\" for=\"cemail\">Email *</label><input type=\"email\" id=\"cemail\" class=\"form-input\" required><div class=\"form-error\"></div></div>\n              <div class=\"form-group\"><label class=\"form-label\" for=\"cphone\">Phone</label><input type=\"tel\" id=\"cphone\" class=\"form-input\"></div>\n              <div class=\"form-group\"><label class=\"form-label\" for=\"csub\">Subject</label><select id=\"csub\" class=\"form-select\"><option value=\"\">Select...</option><option value=\"general\">General Inquiry</option><option value=\"services\">Service Info</option><option value=\"quote\">Request a Quote</option><option value=\"partnership\">Partnership</option><option value=\"support\">Existing Client</option><option value=\"other\">Other</option></select></div>\n              <div class=\"form-group\"><label class=\"form-label\" for=\"cpref\">Contact Method</label><select id=\"cpref\" class=\"form-select\"><option value=\"email\">Email</option><option value=\"phone\">Phone</option><option value=\"either\">Either</option></select></div>\n              <div class=\"form-group full-width\"><label class=\"form-label\" for=\"cmsg\">Message *</label><textarea id=\"cmsg\" class=\"form-textarea\" required placeholder=\"How can we help you?\"></textarea><div class=\"form-error\"></div></div>\n            </div>\n            <div class=\"text-center\" style=\"margin-top:var(--lg);\"><button type=\"submit\" class=\"btn btn-primary btn-lg\">Send Message</button></div>\n          </div>\n          <div class=\"form-success\"><div class=\"form-success-icon\">✓</div><h3>Message Sent Successfully</h3><p>Thank you. We'll get back to you within 1 business day. For urgent matters, call +1 (659) 213-7866.</p></div>\n        </form>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class=\"section section-light\">\n  <div class=\"container\">\n    <div class=\"text-center fade-in\"><span class=\"section-label\">Looking for Something Specific?</span><h2 class=\"section-title\">Choose the Right Path</h2></div>\n    <div class=\"services-grid fade-in\" style=\"margin-top:var(--2xl);max-width:800px;margin-left:auto;margin-right:auto;\">\n      <div class=\"service-card text-center\" style=\"padding:var(--xl);\"><div class=\"service-icon\" style=\"margin:0 auto var(--lg);\">🏦</div><h3>For Clients</h3><p style=\"font-size:.9375rem;margin-bottom:var(--lg);\">Banks, servicers, and asset managers — request a portfolio assessment.</p><a href=\"/clients#client-form\" class=\"btn btn-primary\">Client Assessment →</a></div>\n      <div class=\"service-card text-center\" style=\"padding:var(--xl);\"><div class=\"service-icon\" style=\"margin:0 auto var(--lg);\">🔧</div><h3>For Contractors</h3><p style=\"font-size:.9375rem;margin-bottom:var(--lg);\">Join our vendor network and access consistent work orders.</p><a href=\"/contractors#contractor-form\" class=\"btn btn-primary\">Contractor Registration →</a></div>\n    </div>\n  </div>\n</section>\n\n<footer class=\"site-footer\" role=\"contentinfo\"><div class=\"container\"><div class=\"footer-grid\"><div class=\"footer-brand\"><a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class=\"footer-description\">Institutional-grade property preservation and REO field services for mortgage servicers, banks, and asset managers nationwide.</p></div>\n<div><h4 class=\"footer-heading\">Quick Links</h4><ul class=\"footer-links\"><li><a href=\"/\">Home</a></li><li><a href=\"/services\">Services</a></li><li><a href=\"/portfolio\">Portfolio</a></li><li><a href=\"/about\">About Us</a></li><li><a href=\"/contact\">Contact</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Services</h4><ul class=\"footer-links\"><li><a href=\"/services\">Property Inspections</a></li><li><a href=\"/services\">Preservation &amp; Winterization</a></li><li><a href=\"/services\">REO Management</a></li><li><a href=\"/services\">Compliance &amp; Audit</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Contact Us</h4><ul class=\"footer-contact\"><li><span class=\"icon\">📞</span><span>+1 (659) 213-7866</span></li><li><span class=\"icon\">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class=\"icon\">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div></div>\n<div class=\"footer-bottom\"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class=\"footer-legal\"><a href=\"#\">Privacy Policy</a><a href=\"#\">Terms of Service</a><a href=\"#\">Compliance Disclosures</a></div></div></div></footer>\n\n" }} />
-  )
+    <div className="min-h-screen bg-[#071120] text-slate-100 font-sans">
+      <SiteHeader />
+
+      {/* Page Header */}
+      <section className="py-16 bg-gradient-to-b from-[#0B1D3A] to-[#071120] border-b border-slate-800">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <span className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold rounded-full uppercase tracking-widest mb-4">
+            Get in Touch
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Contact Fortress Preservation
+          </h1>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            Ready to elevate your property preservation operations? Reach out to our national operations team.
+          </p>
+        </div>
+      </section>
+
+      {/* Contact Cards & Form */}
+      <section className="py-16 container mx-auto px-4 max-w-5xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="p-6 bg-[#0B1D3A]/60 border border-slate-800 rounded-2xl text-center">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mx-auto mb-3">📞</div>
+            <h3 className="font-bold text-white mb-1">Phone</h3>
+            <p className="text-amber-400 font-semibold text-sm">+1 (659) 213-7866</p>
+            <span className="text-xs text-slate-400">Mon–Fri, 8am–6pm EST</span>
+          </div>
+
+          <div className="p-6 bg-[#0B1D3A]/60 border border-slate-800 rounded-2xl text-center">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mx-auto mb-3">✉️</div>
+            <h3 className="font-bold text-white mb-1">Email</h3>
+            <p className="text-amber-400 font-semibold text-sm">info@fortresspreservationllc.com</p>
+            <span className="text-xs text-slate-400">Responds within 24 hours</span>
+          </div>
+
+          <div className="p-6 bg-[#0B1D3A]/60 border border-slate-800 rounded-2xl text-center">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mx-auto mb-3">📍</div>
+            <h3 className="font-bold text-white mb-1">Headquarters</h3>
+            <p className="text-amber-400 font-semibold text-sm">123 Commerce Drive, Suite 400</p>
+            <span className="text-xs text-slate-400">Charlotte, NC 28202</span>
+          </div>
+        </div>
+
+        {/* Contact Form */}
+        <div className="bg-[#0B1D3A] border border-slate-800 p-8 rounded-2xl shadow-xl max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-white mb-2">Send Us a Message</h2>
+            <p className="text-slate-400 text-sm">Have a question or work order inquiry? Fill out the form below.</p>
+          </div>
+
+          {submitted ? (
+            <div className="text-center py-12 space-y-4">
+              <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center justify-center text-3xl mx-auto">
+                ✓
+              </div>
+              <h3 className="text-2xl font-bold text-white">Message Sent Successfully</h3>
+              <p className="text-slate-300 text-sm max-w-md mx-auto">
+                Thank you, <span className="text-amber-400 font-semibold">{formData.name}</span>. We will follow up with you within 1 business day.
+              </p>
+              <button
+                onClick={() => setSubmitted(false)}
+                className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors mt-4"
+              >
+                Send Another Message
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Email Address *</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                    placeholder="name@email.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Subject</label>
+                <input
+                  type="text"
+                  value={formData.subject}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                  placeholder="Inquiry subject"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Message *</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full px-4 py-3 bg-[#071120] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 text-sm"
+                  placeholder="How can we help you?"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 uppercase tracking-wider text-sm transition-all shadow-lg shadow-amber-500/20"
+              >
+                Send Message
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+
+      <SiteFooter />
+    </div>
+  );
 }

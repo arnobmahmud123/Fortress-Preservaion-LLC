@@ -1,5 +1,111 @@
+import Link from "next/link";
+import SiteHeader from "@/components/public/SiteHeader";
+import SiteFooter from "@/components/public/SiteFooter";
+
 export default function PortfolioPage() {
+  const caseStudies = [
+    {
+      id: "oakwood",
+      title: "Project Oakwood: Full Rehabilitation & Winterization",
+      client: "Fannie Mae Servicer",
+      location: "Atlanta, GA",
+      date: "Q1 2025",
+      description: "A 3,200 sq. ft. single-family property in distressed condition requiring extensive preservation. Scope included full debris removal, roof tarping, interior water damage remediation, complete winterization, and ongoing lawn maintenance. Delivered to the REO broker in market-ready condition within 14 days.",
+      steps: ["Initial Inspection", "Scope & Estimate", "Preservation Work", "Final Audit"],
+      image: "/images/contractor_preservation.jpg"
+    },
+    {
+      id: "pinehurst",
+      title: "Project Pinehurst: Emergency Board-Up & Securing",
+      client: "Freddie Mac Servicer",
+      location: "Charlotte, NC",
+      date: "Q4 2024",
+      description: "Emergency response following vandalism and unauthorized entry. Dispatched within 4 hours. Board-up of 6 compromised entry points, interior debris removal, securing of utilities, and full winterization. Completed within 48 hours with comprehensive photographic chain of custody.",
+      steps: ["Emergency Dispatch", "Securing & Board-Up", "Preservation", "Compliance Report"],
+      image: "/images/contractor_inspection.jpg"
+    },
+    {
+      id: "meadowbrook",
+      title: "Project Meadowbrook: REO Property Management",
+      client: "FHA / HUD Asset Manager",
+      location: "Dallas, TX",
+      date: "Q3 2024",
+      description: "Full REO lifecycle management for a 1,800 sq. ft. property. Services included eviction monitoring, utility management, HOA compliance resolution, extensive cleanup, and ongoing maintenance. Property sold within 45 days of listing — 12% above appraised value.",
+      steps: ["Eviction Coordination", "Property Cleanout", "Ongoing Maintenance", "Disposition Support"],
+      image: "/images/contractor_reo.jpg"
+    }
+  ];
+
   return (
-    <div dangerouslySetInnerHTML={{ __html: "\n<header class=\"site-header\" role=\"banner\">\n  <div class=\"container header-inner\">\n    <a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>\n    <button class=\"mobile-menu-btn\" aria-label=\"Toggle navigation menu\" aria-expanded=\"false\"><span></span><span></span><span></span></button>\n    <nav class=\"nav-links\" role=\"navigation\" aria-label=\"Main navigation\">\n      <a href=\"/\" class=\"nav-link\">Home</a><a href=\"/services\" class=\"nav-link\">Services</a><a href=\"/portfolio\" class=\"nav-link active\">Portfolio</a><a href=\"/clients\" class=\"nav-link\">For Clients</a><a href=\"/contractors\" class=\"nav-link\">For Contractors</a><a href=\"/about\" class=\"nav-link\">About</a><a href=\"/blog\" class=\"nav-link\">Blog</a><a href=\"/contact\" class=\"nav-link\">Contact</a><a href=\"/contact\" class=\"btn btn-primary btn-sm\">Request a Quote</a>\n    </nav>\n  </div>\n</header>\n<section class=\"page-header\"><div class=\"container\"><h1 class=\"fade-in\">Case Studies</h1><p class=\"fade-in\">Real properties, real transformations. Each project tells the story of our preservation process from inspection to completion.</p></div></section>\n\n<section class=\"section section-light\">\n  <div class=\"container\">\n    <article class=\"case-study-card fade-in\">\n      <div class=\"case-study-image\" style=\"background:linear-gradient(135deg,#3a4a3a,#2a3a2a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1rem;\">📸 Before / After — Project Oakwood</div>\n      <div class=\"case-study-body\">\n        <div class=\"case-study-meta\"><span>Fannie Mae</span><span>•</span><span>Q1 2025</span><span>•</span><span>Atlanta, GA</span><span>•</span><span>3,200 sq. ft.</span></div>\n        <h3 class=\"case-study-title\">Project Oakwood: Full Rehabilitation &amp; Winterization</h3>\n        <p class=\"case-study-text\">A 3,200 sq. ft. single-family property in distressed condition requiring extensive preservation. Scope included full debris removal, roof tarping, interior water damage remediation, complete winterization, and ongoing lawn maintenance. Delivered to the REO broker in market-ready condition within 14 days of work order issuance.</p>\n        <div class=\"case-study-steps\"><span class=\"step-badge\"><span class=\"step-number\">1</span> Initial Inspection</span><span class=\"step-badge\"><span class=\"step-number\">2</span> Scope &amp; Estimate</span><span class=\"step-badge\"><span class=\"step-number\">3</span> Preservation Work</span><span class=\"step-badge\"><span class=\"step-number\">4</span> Final Documentation</span></div>\n      </div>\n    </article>\n    <article class=\"case-study-card fade-in\">\n      <div class=\"case-study-image\" style=\"background:linear-gradient(135deg,#4a3a2a,#3a2a1a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1rem;\">📸 Before / After — Project Pinehurst</div>\n      <div class=\"case-study-body\">\n        <div class=\"case-study-meta\"><span>Freddie Mac</span><span>•</span><span>Q4 2024</span><span>•</span><span>Charlotte, NC</span><span>•</span><span>2,400 sq. ft.</span></div>\n        <h3 class=\"case-study-title\">Project Pinehurst: Emergency Board-Up &amp; Preservation</h3>\n        <p class=\"case-study-text\">Emergency response to a compromised property following a break-in. Dispatched within 4 hours. Board-up of 6 compromised entry points, interior debris removal, securing of utilities, and full winterization. Completed within 48 hours with comprehensive photographic chain of custody.</p>\n        <div class=\"case-study-steps\"><span class=\"step-badge\"><span class=\"step-number\">1</span> Emergency Dispatch</span><span class=\"step-badge\"><span class=\"step-number\">2</span> Security &amp; Securing</span><span class=\"step-badge\"><span class=\"step-number\">3</span> Preservation</span><span class=\"step-badge\"><span class=\"step-number\">4</span> Compliance Report</span></div>\n      </div>\n    </article>\n    <article class=\"case-study-card fade-in\">\n      <div class=\"case-study-image\" style=\"background:linear-gradient(135deg,#2a3a4a,#1a2a3a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1rem;\">📸 Before / After — Project Meadowbrook</div>\n      <div class=\"case-study-body\">\n        <div class=\"case-study-meta\"><span>FHA</span><span>•</span><span>Q3 2024</span><span>•</span><span>Dallas, TX</span><span>•</span><span>1,800 sq. ft.</span></div>\n        <h3 class=\"case-study-title\">Project Meadowbrook: REO Property Management</h3>\n        <p class=\"case-study-text\">Full REO lifecycle management for a 1,800 sq. ft. property. Services included eviction monitoring, utility management, HOA compliance resolution, extensive cleanup, and ongoing maintenance. Property sold within 45 days of listing — 12% above appraised value.</p>\n        <div class=\"case-study-steps\"><span class=\"step-badge\"><span class=\"step-number\">1</span> Eviction Coordination</span><span class=\"step-badge\"><span class=\"step-number\">2</span> Property Cleanout</span><span class=\"step-badge\"><span class=\"step-number\">3</span> Ongoing Maintenance</span><span class=\"step-badge\"><span class=\"step-number\">4</span> Disposition Support</span></div>\n      </div>\n    </article>\n    <article class=\"case-study-card fade-in\">\n      <div class=\"case-study-image\" style=\"background:linear-gradient(135deg,#4a4a3a,#3a3a2a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1rem;\">📸 Before / After — Project Riverside</div>\n      <div class=\"case-study-body\">\n        <div class=\"case-study-meta\"><span>VA</span><span>•</span><span>Q2 2024</span><span>•</span><span>Richmond, VA</span><span>•</span><span>2,800 sq. ft.</span></div>\n        <h3 class=\"case-study-title\">Project Riverside: Complex Preservation with Environmental Remediation</h3>\n        <p class=\"case-study-text\">Multi-phase preservation project involving hazardous material remediation, structural stabilization, and full property restoration. Coordinated with environmental specialists and county inspectors. All work completed within VA preservation guidelines with zero compliance findings.</p>\n        <div class=\"case-study-steps\"><span class=\"step-badge\"><span class=\"step-number\">1</span> Environmental Assessment</span><span class=\"step-badge\"><span class=\"step-number\">2</span> Remediation</span><span class=\"step-badge\"><span class=\"step-number\">3</span> Structural Preservation</span><span class=\"step-badge\"><span class=\"step-number\">4</span> Final Certification</span></div>\n      </div>\n    </article>\n  </div>\n</section>\n\n<section class=\"cta-section\"><div class=\"container\"><h2 class=\"fade-in\">Want to See More?</h2><p class=\"fade-in\">Contact us for a full portfolio review.</p><div class=\"cta-actions fade-in\"><a href=\"/contact\" class=\"btn btn-primary btn-lg\">Schedule a Portfolio Review</a></div></div></section>\n\n<footer class=\"site-footer\" role=\"contentinfo\"><div class=\"container\"><div class=\"footer-grid\"><div class=\"footer-brand\"><a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class=\"footer-description\">Institutional-grade property preservation and REO field services for mortgage servicers, banks, and asset managers nationwide.</p></div>\n<div><h4 class=\"footer-heading\">Quick Links</h4><ul class=\"footer-links\"><li><a href=\"/\">Home</a></li><li><a href=\"/services\">Services</a></li><li><a href=\"/portfolio\">Portfolio</a></li><li><a href=\"/about\">About Us</a></li><li><a href=\"/contact\">Contact</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Services</h4><ul class=\"footer-links\"><li><a href=\"/services\">Property Inspections</a></li><li><a href=\"/services\">Preservation &amp; Winterization</a></li><li><a href=\"/services\">REO Management</a></li><li><a href=\"/services\">Compliance &amp; Audit</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Contact Us</h4><ul class=\"footer-contact\"><li><span class=\"icon\">📞</span><span>+1 (659) 213-7866</span></li><li><span class=\"icon\">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class=\"icon\">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div></div>\n<div class=\"footer-bottom\"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class=\"footer-legal\"><a href=\"#\">Privacy Policy</a><a href=\"#\">Terms of Service</a><a href=\"#\">Compliance Disclosures</a></div></div></div></footer>\n\n" }} />
-  )
+    <div className="min-h-screen bg-[#071120] text-slate-100 font-sans">
+      <SiteHeader />
+
+      {/* Page Header */}
+      <section className="py-16 bg-gradient-to-b from-[#0B1D3A] to-[#071120] border-b border-slate-800">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <span className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold rounded-full uppercase tracking-widest mb-4">
+            Field Operations Portfolio
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Featured Preservation Case Studies
+          </h1>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            Real properties, real contractor transformations. Explore how Fortress handles initial inspections, emergency board-ups, and REO management.
+          </p>
+        </div>
+      </section>
+
+      {/* Portfolio Projects */}
+      <section className="py-16 container mx-auto px-4 max-w-6xl space-y-12">
+        {caseStudies.map((project) => (
+          <div key={project.id} className="bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 rounded-2xl overflow-hidden transition-all grid grid-cols-1 lg:grid-cols-12">
+            <div className="lg:col-span-5 h-64 lg:h-auto relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+              <span className="absolute top-4 left-4 px-3 py-1 bg-[#0B1D3A]/90 text-amber-400 text-xs font-bold rounded-full border border-amber-500/30">
+                {project.client}
+              </span>
+            </div>
+            <div className="lg:col-span-7 p-8 space-y-4 flex flex-col justify-between">
+              <div>
+                <div className="flex gap-3 text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">
+                  <span>{project.location}</span>
+                  <span>•</span>
+                  <span>{project.date}</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-3">{project.title}</h2>
+                <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                  {project.description}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-800/80">
+                {project.steps.map((step, idx) => (
+                  <span key={idx} className="inline-flex items-center gap-1.5 text-xs bg-amber-500/10 text-amber-300 border border-amber-500/20 px-3 py-1 rounded-full">
+                    <span className="w-4 h-4 rounded-full bg-amber-400 text-slate-950 font-bold text-[10px] flex items-center justify-center">
+                      {idx + 1}
+                    </span>
+                    {step}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* CTA */}
+      <section className="py-12 bg-[#09172E] text-center border-t border-slate-800">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <h2 className="text-2xl font-bold text-white mb-3">Require Preservation Solutions in Your Market?</h2>
+          <p className="text-slate-400 text-sm mb-6">Request a customized scope estimate or field inspection dispatch.</p>
+          <Link href="/contact" className="inline-block px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-colors">
+            Get in Touch
+          </Link>
+        </div>
+      </section>
+
+      <SiteFooter />
+    </div>
+  );
 }

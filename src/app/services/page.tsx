@@ -1,5 +1,106 @@
+import Link from "next/link";
+import SiteHeader from "@/components/public/SiteHeader";
+import SiteFooter from "@/components/public/SiteFooter";
+
 export default function ServicesPage() {
   return (
-    <div dangerouslySetInnerHTML={{ __html: "\n<header class=\"site-header\" role=\"banner\">\n  <div class=\"container header-inner\">\n    <a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>\n    <button class=\"mobile-menu-btn\" aria-label=\"Toggle navigation menu\" aria-expanded=\"false\"><span></span><span></span><span></span></button>\n    <nav class=\"nav-links\" role=\"navigation\" aria-label=\"Main navigation\">\n      <a href=\"/\" class=\"nav-link\">Home</a><a href=\"/services\" class=\"nav-link active\">Services</a><a href=\"/portfolio\" class=\"nav-link\">Portfolio</a><a href=\"/clients\" class=\"nav-link\">For Clients</a><a href=\"/contractors\" class=\"nav-link\">For Contractors</a><a href=\"/about\" class=\"nav-link\">About</a><a href=\"/blog\" class=\"nav-link\">Blog</a><a href=\"/contact\" class=\"nav-link\">Contact</a><a href=\"/contact\" class=\"btn btn-primary btn-sm\">Request a Quote</a>\n    </nav>\n  </div>\n</header>\n<section class=\"page-header\"><div class=\"container\"><h1 class=\"fade-in\">Our Services</h1><p class=\"fade-in\">End-to-end property preservation solutions built for institutional requirements.</p></div></section>\n\n<section class=\"section\">\n  <div class=\"container\">\n    <div class=\"about-content fade-in\" style=\"margin-bottom:var(--4xl);\">\n      <div><span class=\"section-label\">Service 01</span><h2>Property Inspections</h2><p>Our certified field inspectors deliver comprehensive property condition reports within 24–48 hours of dispatch. Every inspection includes photographic documentation, occupancy verification, and condition assessments that meet Fannie Mae, Freddie Mac, and FHA standards.</p><ul style=\"list-style:disc;padding-left:var(--lg);margin-bottom:var(--lg);\"><li style=\"margin-bottom:var(--sm);\">Occupancy verification &amp; door-knock reports</li><li style=\"margin-bottom:var(--sm);\">Property condition assessment with photo evidence</li><li style=\"margin-bottom:var(--sm);\">Broker Price Opinion (BPO) support</li><li style=\"margin-bottom:var(--sm);\">Environmental hazard screening</li><li style=\"margin-bottom:var(--sm);\">Digital reporting with timestamped GPS data</li></ul></div>\n      <div class=\"about-image\" style=\"background:linear-gradient(135deg,#3a4a5a,#2a3a4a);color:rgba(255,255,255,.4);font-size:1.25rem;\">📸 Inspection Services</div>\n    </div>\n    <div class=\"about-content fade-in\" style=\"margin-bottom:var(--4xl);flex-direction:row-reverse;\">\n      <div><span class=\"section-label\">Service 02</span><h2>Preservation &amp; Winterization</h2><p>Protect your portfolio's value with our comprehensive preservation services. We secure, stabilize, and maintain vacant properties to prevent deterioration and ensure investor compliance.</p><ul style=\"list-style:disc;padding-left:var(--lg);margin-bottom:var(--lg);\"><li style=\"margin-bottom:var(--sm);\">Full winterization (water shut-off, antifreeze, pipe insulation)</li><li style=\"margin-bottom:var(--sm);\">Board-up and security installations</li><li style=\"margin-bottom:var(--sm);\">Debris removal and property clean-out</li><li style=\"margin-bottom:var(--sm);\">Lawn maintenance and snow removal</li><li style=\"margin-bottom:var(--sm);\">Pool closing and maintenance</li></ul></div>\n      <div class=\"about-image\" style=\"background:linear-gradient(135deg,#4a5a3a,#3a4a2a);color:rgba(255,255,255,.4);font-size:1.25rem;\">🏠 Preservation Work</div>\n    </div>\n    <div class=\"about-content fade-in\" style=\"margin-bottom:var(--4xl);\">\n      <div><span class=\"section-label\">Service 03</span><h2>REO Property Management</h2><p>Full-spectrum REO asset management from acquisition to disposition. We coordinate every aspect of property maintenance and preparation for sale, ensuring maximum value preservation.</p><ul style=\"list-style:disc;padding-left:var(--lg);margin-bottom:var(--lg);\"><li style=\"margin-bottom:var(--sm);\">Eviction monitoring and coordination</li><li style=\"margin-bottom:var(--sm);\">Utility turn-on/turn-off management</li><li style=\"margin-bottom:var(--sm);\">HOA compliance and violation resolution</li><li style=\"margin-bottom:var(--sm);\">Staging and curb appeal enhancement</li><li style=\"margin-bottom:var(--sm);\">Final property disposition preparation</li></ul></div>\n      <div class=\"about-image\" style=\"background:linear-gradient(135deg,#3a4a5a,#2a3a4a);color:rgba(255,255,255,.4);font-size:1.25rem;\">📋 REO Management</div>\n    </div>\n    <div class=\"about-content fade-in\" style=\"flex-direction:row-reverse;\">\n      <div><span class=\"section-label\">Service 04</span><h2>Compliance &amp; Audit Documentation</h2><p>Our documentation systems are built for the most demanding compliance environments. Every work order generates a complete, auditable trail that satisfies investor and regulatory requirements.</p><ul style=\"list-style:disc;padding-left:var(--lg);margin-bottom:var(--lg);\"><li style=\"margin-bottom:var(--sm);\">Fannie Mae / Freddie Mac guideline compliance</li><li style=\"margin-bottom:var(--sm);\">FHA, USDA, and VA preservation standards</li><li style=\"margin-bottom:var(--sm);\">Photographic chain of custody for every work order</li><li style=\"margin-bottom:var(--sm);\">Electronic signature and timestamp verification</li><li style=\"margin-bottom:var(--sm);\">Quarterly compliance reporting and audit support</li></ul></div>\n      <div class=\"about-image\" style=\"background:linear-gradient(135deg,#2a3a4a,#1a2a3a);color:rgba(255,255,255,.4);font-size:1.25rem;\">⚖️ Compliance</div>\n    </div>\n  </div>\n</section>\n\n<section class=\"cta-section\"><div class=\"container\"><h2 class=\"fade-in\">Need a Custom Service Package?</h2><p class=\"fade-in\">Every client's portfolio is unique. We'll design a preservation program that matches your requirements.</p><div class=\"cta-actions fade-in\"><a href=\"/contact\" class=\"btn btn-primary btn-lg\">Discuss Your Needs</a></div></div></section>\n\n<footer class=\"site-footer\" role=\"contentinfo\"><div class=\"container\"><div class=\"footer-grid\"><div class=\"footer-brand\"><a href=\"/\" class=\"logo\" aria-label=\"Fortress Preservation LLC Home\"><div class=\"logo-icon\">F</div><div class=\"logo-text\">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class=\"footer-description\">Institutional-grade property preservation and REO field services for mortgage servicers, banks, and asset managers nationwide.</p></div>\n<div><h4 class=\"footer-heading\">Quick Links</h4><ul class=\"footer-links\"><li><a href=\"/\">Home</a></li><li><a href=\"/services\">Services</a></li><li><a href=\"/portfolio\">Portfolio</a></li><li><a href=\"/about\">About Us</a></li><li><a href=\"/contact\">Contact</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Services</h4><ul class=\"footer-links\"><li><a href=\"/services\">Property Inspections</a></li><li><a href=\"/services\">Preservation &amp; Winterization</a></li><li><a href=\"/services\">REO Management</a></li><li><a href=\"/services\">Compliance &amp; Audit</a></li></ul></div>\n<div><h4 class=\"footer-heading\">Contact Us</h4><ul class=\"footer-contact\"><li><span class=\"icon\">📞</span><span>+1 (659) 213-7866</span></li><li><span class=\"icon\">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class=\"icon\">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div></div>\n<div class=\"footer-bottom\"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class=\"footer-legal\"><a href=\"#\">Privacy Policy</a><a href=\"#\">Terms of Service</a><a href=\"#\">Compliance Disclosures</a></div></div></div></footer>\n\n" }} />
-  )
+    <div className="min-h-screen bg-[#071120] text-slate-100 font-sans">
+      <SiteHeader />
+
+      {/* Page Header */}
+      <section className="py-16 bg-gradient-to-b from-[#0B1D3A] to-[#071120] border-b border-slate-800">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <span className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold rounded-full uppercase tracking-widest mb-4">
+            Full-Spectrum Operations
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Property Preservation & REO Services
+          </h1>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            Investor-compliant field services designed to protect real estate assets, maintain market value, and minimize holding liability.
+          </p>
+        </div>
+      </section>
+
+      {/* Services List */}
+      <section className="py-16 container mx-auto px-4 max-w-6xl space-y-16">
+        
+        {/* Service 1: Property Inspections */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#0B1D3A]/40 border border-slate-800 p-8 rounded-2xl">
+          <div className="lg:col-span-7 space-y-4">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">01. Field Inspection</span>
+            <h2 className="text-2xl font-bold text-white">Occupancy & Condition Inspections</h2>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Comprehensive occupancy verification, contact attempts, and physical property condition assessments delivered within 24 to 48 hours of work order dispatch.
+            </p>
+            <ul className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <li className="flex items-center gap-2">✓ GPS-Tagged Photo Proof</li>
+              <li className="flex items-center gap-2">✓ Occupancy Verification</li>
+              <li className="flex items-center gap-2">✓ Violation Detection</li>
+              <li className="flex items-center gap-2">✓ Natural Disaster Audits</li>
+            </ul>
+          </div>
+          <div className="lg:col-span-5 h-56 rounded-xl overflow-hidden border border-slate-700">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/contractor_inspection.jpg" alt="Inspection" className="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        {/* Service 2: Securing & Winterization */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#0B1D3A]/40 border border-slate-800 p-8 rounded-2xl">
+          <div className="lg:col-span-5 h-56 rounded-xl overflow-hidden border border-slate-700 order-2 lg:order-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/contractor_preservation.jpg" alt="Winterization" className="w-full h-full object-cover" />
+          </div>
+          <div className="lg:col-span-7 space-y-4 order-1 lg:order-2">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">02. Securing & Stabilization</span>
+            <h2 className="text-2xl font-bold text-white">Property Securing & Winterization</h2>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Immediate stabilization of vacant properties. Lock changes, window board-ups, roof tarping, debris cleanouts, and pressure-tested plumbing winterizations.
+            </p>
+            <ul className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <li className="flex items-center gap-2">✓ HUD/Fannie Lock Changes</li>
+              <li className="flex items-center gap-2">✓ 4-Hour Emergency Board-Ups</li>
+              <li className="flex items-center gap-2">✓ Air-Compressor Winterization</li>
+              <li className="flex items-center gap-2">✓ Debris Removal & Trashout</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Service 3: REO Property Management */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#0B1D3A]/40 border border-slate-800 p-8 rounded-2xl">
+          <div className="lg:col-span-7 space-y-4">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">03. Asset Disposition</span>
+            <h2 className="text-2xl font-bold text-white">REO Property Maintenance & Repairs</h2>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Ongoing lawn maintenance, janitorial cleanings, pool maintenance, and structural repairs to prepare REO assets for market listing and sale.
+            </p>
+            <ul className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <li className="flex items-center gap-2">✓ Bi-Weekly Lawn Care</li>
+              <li className="flex items-center gap-2">✓ Sales Clean Preparation</li>
+              <li className="flex items-center gap-2">✓ Minor Structural Repairs</li>
+              <li className="flex items-center gap-2">✓ Eviction Assistance</li>
+            </ul>
+          </div>
+          <div className="lg:col-span-5 h-56 rounded-xl overflow-hidden border border-slate-700">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/contractor_reo.jpg" alt="REO Repairs" className="w-full h-full object-cover" />
+          </div>
+        </div>
+
+      </section>
+
+      {/* CTA */}
+      <section className="py-12 bg-[#09172E] text-center border-t border-slate-800">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-white mb-4">Need Service Solutions for Your Portfolio?</h2>
+          <Link href="/clients" className="inline-block px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-colors">
+            Request Service Quote
+          </Link>
+        </div>
+      </section>
+
+      <SiteFooter />
+    </div>
+  );
 }

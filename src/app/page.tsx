@@ -1,149 +1,174 @@
+import Link from "next/link";
+import SiteHeader from "@/components/public/SiteHeader";
+import SiteFooter from "@/components/public/SiteFooter";
+
 export default function IndexPage() {
   return (
-    <div dangerouslySetInnerHTML={{ __html: `
-<header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a>
-    <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
-    <nav class="nav-links" role="navigation" aria-label="Main navigation">
-      <a href="/" class="nav-link active">Home</a><a href="/services" class="nav-link">Services</a><a href="/portfolio" class="nav-link">Portfolio</a><a href="/clients" class="nav-link">For Clients</a><a href="/contractors" class="nav-link">For Contractors</a><a href="/about" class="nav-link">About</a><a href="/blog" class="nav-link">Blog</a><a href="/contact" class="nav-link">Contact</a><a href="/contact" class="btn btn-primary btn-sm">Request a Quote</a>
-    </nav>
-  </div>
-</header>
+    <div className="min-h-screen bg-[#071120] text-slate-100 font-sans">
+      <SiteHeader />
 
-<section class="hero" aria-label="Hero banner">
-  <div class="hero-bg"></div><div class="hero-overlay"></div>
-  <div class="container hero-content">
-    <div class="hero-badge fade-in"><span>✦</span> Trusted by Mortgage Servicers Nationwide</div>
-    <h1 class="hero-title fade-in">Institutional-Grade<br><span class="highlight">Property Preservation</span><br>&amp; REO Field Services</h1>
-    <p class="hero-text fade-in">Fortress Preservation delivers audit-ready property preservation, compliant inspections, and full-spectrum REO management for mortgage servicers, banks, and asset managers across the United States.</p>
-    <div class="hero-actions fade-in"><a href="/contact" class="btn btn-primary btn-lg">Request a Portfolio Assessment</a><a href="/portfolio" class="btn btn-secondary btn-lg">View Our Work</a></div>
-    <div class="hero-stats fade-in"><div class="stat-item"><span class="stat-number">5,000+</span><span class="stat-label">Properties Preserved</span></div><div class="stat-item"><span class="stat-number">47</span><span class="stat-label">States Covered</span></div><div class="stat-item"><span class="stat-number">99.7%</span><span class="stat-label">Compliance Rating</span></div><div class="stat-item"><span class="stat-number">12+</span><span class="stat-label">Years Experience</span></div></div>
-  </div>
-</section>
+      {/* BIG PHOTO SCREEN / HERO BANNER WITH CONTRACTOR WORKING PHOTOS RIGHT BELOW TOP NAV */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0B1D3A] via-[#09172E] to-[#071120] border-b border-amber-500/10 py-12 lg:py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Copy Column */}
+            <div className="lg:col-span-6 z-10 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest">
+                <span>✦</span> Trusted by Mortgage Servicers Nationwide
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
+                Institutional-Grade <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500">
+                  Property Preservation
+                </span> <br />
+                & REO Field Services
+              </h1>
+              <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-xl">
+                Fortress Preservation delivers audit-ready property preservation, compliant inspections, and full-spectrum REO management for mortgage servicers, banks, and asset managers across all 47 covered states.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <Link href="/clients" className="px-6 py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-xl shadow-amber-500/20 transition-all text-sm uppercase tracking-wider">
+                  Request Portfolio Assessment
+                </Link>
+                <Link href="/portfolio" className="px-6 py-3.5 rounded-xl font-semibold text-white border border-slate-700 hover:border-amber-400 hover:bg-amber-400/10 transition-all text-sm">
+                  View Our Field Work
+                </Link>
+              </div>
 
-<!-- Contractor Field Operations Photo Showcase -->
-<section class="section" aria-label="Field Operations Showcase" style="padding-top:3rem;padding-bottom:3rem;background:linear-gradient(180deg,#0B1D3A 0%,#071120 100%);border-bottom:1px solid rgba(255,255,255,0.05);">
-  <div class="container">
-    <div class="text-center fade-in" style="margin-bottom:2rem;">
-      <span class="section-label">Field Operations</span>
-      <h2 class="section-title" style="color:#fff;">Contractors in Action</h2>
-      <p class="section-subtitle" style="margin-left:auto;margin-right:auto;max-width:700px;color:#94a3b8;">
-        Vetted, insured, and certified field contractors operating across 47 states with real-time photo documentation and audit compliance.
-      </p>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
-      <div style="background:#0F2448;border:1px solid rgba(201,168,76,0.25);border-radius:1rem;overflow:hidden;box-shadow:0 10px 25px -5px rgba(0,0,0,0.5);">
-        <img src="/images/contractor_inspection.jpg" alt="Field Inspection Work" style="width:100%;height:220px;object-fit:cover;" />
-        <div style="padding:1.25rem;">
-          <div style="color:#c9a84c;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">01. Digital Field Inspection</div>
-          <h3 style="font-size:1.125rem;font-weight:700;color:#fff;margin-bottom:0.5rem;">Audit-Ready Condition Reports</h3>
-          <p style="font-size:0.875rem;color:#94a3b8;line-height:1.5;margin:0;">Inspectors capture GPS-tagged, timestamped photographic proof for Fannie Mae and Freddie Mac compliance.</p>
+              {/* Stats */}
+              <div className="grid grid-cols-4 gap-4 pt-8 border-t border-slate-800/80 text-center">
+                <div>
+                  <span className="block text-2xl font-black text-amber-400">5,000+</span>
+                  <span className="text-[11px] text-slate-400 uppercase tracking-wider">Preserved</span>
+                </div>
+                <div>
+                  <span className="block text-2xl font-black text-amber-400">47</span>
+                  <span className="text-[11px] text-slate-400 uppercase tracking-wider">States</span>
+                </div>
+                <div>
+                  <span className="block text-2xl font-black text-amber-400">99.7%</span>
+                  <span className="text-[11px] text-slate-400 uppercase tracking-wider">Compliance</span>
+                </div>
+                <div>
+                  <span className="block text-2xl font-black text-amber-400">12+ Yrs</span>
+                  <span className="text-[11px] text-slate-400 uppercase tracking-wider">Experience</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Big Photo Screen Showcase */}
+            <div className="lg:col-span-6 relative">
+              <div className="relative rounded-2xl overflow-hidden border border-amber-500/20 shadow-2xl shadow-amber-500/10 bg-[#0B1D3A]">
+                {/* Featured Big Photo */}
+                <div className="relative h-[340px] sm:h-[420px] w-full overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/contractor_inspection.jpg"
+                    alt="Contractor Property Preservation Inspection"
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1D3A] via-transparent to-transparent"></div>
+                  
+                  {/* Overlay Badge */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-[#0B1D3A]/90 backdrop-blur-md border border-amber-500/30 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                      <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Field Operations Live Showcase</span>
+                      <p className="text-white text-sm font-semibold m-0">Certified Field Contractor — Inspection & Photo Documentation</p>
+                    </div>
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold">
+                      VERIFIED
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sub Photo Strip */}
+                <div className="grid grid-cols-2 gap-2 p-2 bg-[#09172E]">
+                  <div className="relative h-28 rounded-lg overflow-hidden border border-slate-800 group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/images/contractor_preservation.jpg" alt="Board-Up & Winterization Crew" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <div className="absolute inset-0 bg-slate-950/40 flex items-end p-2 text-[11px] font-bold text-amber-300">
+                      Winterization & Board-Up Crew
+                    </div>
+                  </div>
+                  <div className="relative h-28 rounded-lg overflow-hidden border border-slate-800 group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/images/contractor_reo.jpg" alt="REO Property Repair" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <div className="absolute inset-0 bg-slate-950/40 flex items-end p-2 text-[11px] font-bold text-amber-300">
+                      REO Repair & Maintenance
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
-      <div style="background:#0F2448;border:1px solid rgba(201,168,76,0.25);border-radius:1rem;overflow:hidden;box-shadow:0 10px 25px -5px rgba(0,0,0,0.5);">
-        <img src="/images/contractor_preservation.jpg" alt="Property Securing & Winterization" style="width:100%;height:220px;object-fit:cover;" />
-        <div style="padding:1.25rem;">
-          <div style="color:#c9a84c;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">02. Property Securing</div>
-          <h3 style="font-size:1.125rem;font-weight:700;color:#fff;margin-bottom:0.5rem;">Board-Up &amp; Winterization</h3>
-          <p style="font-size:0.875rem;color:#94a3b8;line-height:1.5;margin:0;">Rapid response field crews secure entry points, clear debris, and complete winterization per investor guidelines.</p>
+      </section>
+
+      {/* CORE COMPETENCIES / SERVICES */}
+      <section className="py-20 bg-[#071120]">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block mb-2">Core Competencies</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">Comprehensive Preservation Services</h2>
+            <p className="text-slate-400 text-base">
+              From initial occupancy inspection to full REO disposition, we deliver end-to-end property preservation solutions matching strict investor guidelines.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 rounded-2xl bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 text-2xl flex items-center justify-center mb-4">🔍</div>
+              <h3 className="text-lg font-bold text-white mb-2">Property Inspections</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Detailed condition reports with GPS & timestamped photos delivered within 24–48 hours of dispatch.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 text-2xl flex items-center justify-center mb-4">🏠</div>
+              <h3 className="text-lg font-bold text-white mb-2">Preservation & Winterization</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Secure vacant properties with board-ups, lock changes, pressure-tested winterization, and debris cleanouts.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 text-2xl flex items-center justify-center mb-4">📋</div>
+              <h3 className="text-lg font-bold text-white mb-2">REO Property Management</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Full lifecycle REO maintenance — from broker price opinion prep to lawn maintenance and final asset disposition.
+              </p>
+            </div>
+            <div className="p-6 rounded-2xl bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 text-2xl flex items-center justify-center mb-4">⚖️</div>
+              <h3 className="text-lg font-bold text-white mb-2">Compliance & Audit</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Audit-ready digital documentation for every work order complying with Fannie Mae, Freddie Mac, FHA, and VA.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div style="background:#0F2448;border:1px solid rgba(201,168,76,0.25);border-radius:1rem;overflow:hidden;box-shadow:0 10px 25px -5px rgba(0,0,0,0.5);">
-        <img src="/images/contractor_reo.jpg" alt="REO Property Maintenance" style="width:100%;height:220px;object-fit:cover;" />
-        <div style="padding:1.25rem;">
-          <div style="color:#c9a84c;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">03. REO Maintenance</div>
-          <h3 style="font-size:1.125rem;font-weight:700;color:#fff;margin-bottom:0.5rem;">Market-Ready Property Repairs</h3>
-          <p style="font-size:0.875rem;color:#94a3b8;line-height:1.5;margin:0;">Full lifecycle REO repair and maintenance to maximize property value prior to asset disposition.</p>
+      </section>
+
+      {/* CALL TO ACTION */}
+      <section className="py-16 bg-gradient-to-r from-[#0B1D3A] via-[#09172E] to-[#0B1D3A] border-t border-slate-800 text-center">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-3xl font-extrabold text-white mb-4">Ready to Elevate Your Preservation Standards?</h2>
+          <p className="text-slate-300 mb-8 text-base">
+            Schedule a portfolio assessment with our team or register as a qualified vendor contractor in our network.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link href="/clients" className="px-6 py-3.5 rounded-xl font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 transition-all text-sm uppercase tracking-wider">
+              For Institutional Clients
+            </Link>
+            <Link href="/contractors" className="px-6 py-3.5 rounded-xl font-bold text-white border border-amber-400/40 hover:bg-amber-400/10 transition-all text-sm uppercase tracking-wider">
+              Join Contractor Network
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <SiteFooter />
     </div>
-  </div>
-</section>
-
-<section class="section section-light before-after-section" aria-label="Property preservation before and after comparison">
-  <div class="container">
-    <div class="text-center"><span class="section-label">Proven Results</span><h2 class="section-title">See the Fortress Difference</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Every property tells a story. From distressed to preserved — our work speaks for itself through measurable outcomes, not promises.</p></div>
-    <div class="before-after-container fade-in" role="img" aria-label="Interactive before and after comparison slider">
-      <div class="before-after-wrapper">
-        <div class="before-image" style="background:linear-gradient(135deg,#3a3a3a,#5a4a3a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1.25rem;font-family:Inter,sans-serif;">🏚 Before</div>
-        <div class="after-image" style="background:linear-gradient(135deg,#2a5a3a,#4a8a5a);clip-path:inset(0 50% 0 0);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font-size:1.25rem;font-family:Inter,sans-serif;">✦ After</div>
-        <span class="before-label">Distressed</span><span class="after-label">Preserved</span>
-        <div class="slider-handle" role="slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" tabindex="0"></div>
-      </div>
-    </div>
-    <p class="text-center" style="color:var(--text-l);font-size:.875rem;margin-top:var(--md);">Drag the slider to compare — 1234 Oak Street, Columbus, OH | Q2 2024</p>
-  </div>
-</section>
-
-<section class="section" id="services" aria-label="Our core services">
-  <div class="container">
-    <div class="text-center fade-in"><span class="section-label">Core Competencies</span><h2 class="section-title">Comprehensive Preservation Services</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">From initial inspection to final disposition, we provide end-to-end property preservation solutions that meet the strictest investor guidelines.</p></div>
-    <div class="services-grid">
-      <article class="service-card fade-in"><div class="service-icon">🔍</div><h3>Property Inspections</h3><p>Detailed condition reports with photographic evidence, occupancy verification, and investor-compliant documentation within 24–48 hours of dispatch.</p></article>
-      <article class="service-card fade-in"><div class="service-icon">🏠</div><h3>Preservation &amp; Winterization</h3><p>Secure, stabilize, and preserve vacant properties including board-ups, lock changes, debris removal, and full winterization per Fannie Mae/Freddie Mac guidelines.</p></article>
-      <article class="service-card fade-in"><div class="service-icon">📋</div><h3>REO Property Management</h3><p>Full lifecycle REO management — from broker price opinion coordination to eviction monitoring, lawn maintenance, and final property disposition.</p></article>
-      <article class="service-card fade-in"><div class="service-icon">⚖️</div><h3>Compliance &amp; Audit Support</h3><p>Audit-ready documentation for every work order. Full compliance with Fannie Mae, Freddie Mac, FHA, USDA, and VA preservation guidelines.</p></article>
-    </div>
-    <div class="text-center fade-in" style="margin-top:var(--2xl);"><a href="/services" class="btn btn-outline btn-lg">View All Services →</a></div>
-  </div>
-</section>
-
-<section class="section section-dark" aria-label="Compliance and certifications">
-  <div class="container">
-    <div class="text-center fade-in"><span class="section-label">Why Fortress</span><h2 class="section-title">Built for Institutional Trust</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Every property we touch is backed by rigorous compliance protocols, auditable documentation, and investor-grade quality standards.</p></div>
-    <div class="trust-grid fade-in">
-      <div class="trust-item"><div class="trust-icon">🏆</div><h4>Investor-Compliant</h4><p>Full adherence to Fannie Mae, Freddie Mac, FHA, and VA preservation guidelines with documented chain of custody.</p></div>
-      <div class="trust-item"><div class="trust-icon">📄</div><h4>Audit-Ready Documentation</h4><p>Every work order includes before/during/after photography, timestamped reports, and electronic signature verification.</p></div>
-      <div class="trust-item"><div class="trust-icon">🛡️</div><h4>Insured &amp; Bonded</h4><p>$2 million general liability insurance, workers' compensation, and blanket fidelity bond coverage for all operations.</p></div>
-      <div class="trust-item"><div class="trust-icon">🌐</div><h4>Nationwide Coverage</h4><p>47-state contractor network with local market knowledge and rapid dispatch capabilities in all major MSAs.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section section-light" aria-label="How our process works">
-  <div class="container">
-    <div class="text-center fade-in"><span class="section-label">Our Process</span><h2 class="section-title">From Work Order to Completion</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">A streamlined, transparent workflow designed for speed without compromising compliance.</p></div>
-    <div class="services-grid">
-      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">01</div><h3>Work Order Received</h3><p>Digital work order with scope, property details, and compliance requirements assigned within 1 hour of receipt.</p></div>
-      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">02</div><h3>Inspection &amp; Assessment</h3><p>Certified field inspector dispatched within 24 hours. Comprehensive condition report with photographic evidence delivered.</p></div>
-      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">03</div><h3>Scope Approval</h3><p>Detailed scope of work and cost estimate submitted for approval. No work begins without documented authorization.</p></div>
-      <div class="service-card fade-in"><div class="service-icon" style="font-weight:700;font-family:var(--font-h);font-size:1.75rem;">04</div><h3>Preservation &amp; Completion</h3><p>Work completed by vetted contractors. Final inspection with before/after documentation delivered within 48 hours.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section" aria-label="Featured case studies">
-  <div class="container">
-    <div class="text-center fade-in"><span class="section-label">Case Studies</span><h2 class="section-title">Featured Preservation Projects</h2><p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Real properties, real results. Each case study represents a complete preservation lifecycle with measurable outcomes.</p></div>
-    <article class="case-study-card fade-in">
-      <div class="case-study-image" style="background:linear-gradient(135deg,#2a3a4a,#4a5a6a);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:1rem;">📸 Case Study: 1234 Oak Street, Columbus, OH</div>
-      <div class="case-study-body">
-        <div class="case-study-meta"><span>Fannie Mae</span><span>•</span><span>Q2 2024</span><span>•</span><span>Columbus, OH</span></div>
-        <h3 class="case-study-title">Full Property Preservation &amp; Winterization</h3>
-        <p class="case-study-text">Vacant 3-bedroom property requiring complete winterization, debris removal, board-up of compromised entry points, and ongoing lawn maintenance. Completed under budget and ahead of schedule with full photographic documentation.</p>
-        <div class="case-study-steps"><span class="step-badge"><span class="step-number">1</span> Inspection</span><span class="step-badge"><span class="step-number">2</span> Scope Approval</span><span class="step-badge"><span class="step-number">3</span> Preservation</span><span class="step-badge"><span class="step-number">4</span> Final Inspection</span></div>
-      </div>
-    </article>
-    <div class="text-center fade-in"><a href="/portfolio" class="btn btn-outline btn-lg">View All Case Studies →</a></div>
-  </div>
-</section>
-
-<section class="cta-section" aria-label="Call to action">
-  <div class="container"><h2 class="fade-in">Ready to Elevate Your Preservation Standards?</h2><p class="fade-in">Schedule a portfolio assessment with our team. We'll evaluate your current preservation operations and show you how Fortress can deliver better outcomes — with full compliance and audit-ready documentation.</p><div class="cta-actions fade-in"><a href="/contact" class="btn btn-primary btn-lg">Request a Portfolio Assessment</a><a href="#" class="btn btn-accent-outline btn-lg" onclick="alert('Downloading Preservation Scope Checklist PDF...');return false;">Download Compliance Checklist</a></div></div>
-</section>
-
-<footer class="site-footer" role="contentinfo">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand"><a href="/" class="logo" aria-label="Fortress Preservation LLC Home"><div class="logo-icon">F</div><div class="logo-text">Fortress Preservation<span>Property Preservation &amp; REO Services</span></div></a><p class="footer-description">Institutional-grade property preservation, REO field services, and compliance-driven inspections for mortgage servicers, banks, and asset managers nationwide.</p></div>
-      <div><h4 class="footer-heading">Quick Links</h4><ul class="footer-links"><li><a href="/">Home</a></li><li><a href="/services">Services</a></li><li><a href="/portfolio">Portfolio</a></li><li><a href="/clients">For Clients</a></li><li><a href="/contractors">For Contractors</a></li><li><a href="/about">About Us</a></li><li><a href="/contact">Contact</a></li></ul></div>
-      <div><h4 class="footer-heading">Services</h4><ul class="footer-links"><li><a href="/services">Property Inspections</a></li><li><a href="/services">Preservation &amp; Winterization</a></li><li><a href="/services">REO Management</a></li><li><a href="/services">Compliance &amp; Audit</a></li></ul></div>
-      <div><h4 class="footer-heading">Contact Us</h4><ul class="footer-contact"><li><span class="icon">📞</span><span>+1 (659) 213-7866</span></li><li><span class="icon">✉️</span><span>info@fortresspreservationllc.com</span></li><li><span class="icon">📍</span><span>123 Commerce Drive, Suite 400<br>Charlotte, NC 28202</span></li></ul></div>
-    </div>
-    <div class="footer-bottom"><p>&copy; 2025 Fortress Preservation LLC. All rights reserved.</p><div class="footer-legal"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Compliance Disclosures</a></div></div>
-  </div>
-</footer>
-` }} />
-  )
+  );
 }
