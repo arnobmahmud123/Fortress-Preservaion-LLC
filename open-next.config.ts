@@ -5,17 +5,13 @@ const config: OpenNextConfig = {
     override: {
       wrapper: "cloudflare-node",
       converter: "edge",
-      incrementalCache: async () => {
-        const { r2IncrementalCache } = await import(
-          "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache"
-        );
-        return r2IncrementalCache;
-      },
+      proxyExternalRequest: "fetch",
+      incrementalCache: "dummy",
       tagCache: "dummy",
       queue: "dummy",
     },
   },
-
+  edgeExternals: ["node:crypto"],
   middleware: {
     external: true,
     override: {
