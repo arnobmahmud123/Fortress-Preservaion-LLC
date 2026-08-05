@@ -30,8 +30,8 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  secret: process.env.AUTH_SECRET || "fortress-preservation-super-secret-key-12345",
   providers: [
     CredentialsProvider({
       name: "Credentials",
