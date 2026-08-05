@@ -25,21 +25,31 @@ export async function saveGeneratedPost({
   status?: "DRAFT" | "PUBLISHED" | "SCHEDULED";
 }) {
   const session = await auth();
-  const userId = session?.user?.id || "admin-system-id";
+  let userId = session?.user?.id;
 
-  try {
-    await prisma.user.upsert({
-      where: { id: userId },
-      update: {},
-      create: {
-        id: userId,
-        name: "Admin System",
-        email: "admin@fortresspreservation.com",
-        role: "ADMIN"
-      }
+  if (!userId) {
+    const existingAdmin = await prisma.user.findUnique({
+      where: { email: "admin@fortresspreservation.com" }
     });
-  } catch (err) {
-    console.error("Failed to upsert admin user:", err);
+    if (existingAdmin) {
+      userId = existingAdmin.id;
+    } else {
+      userId = "admin-system-id";
+      try {
+        await prisma.user.upsert({
+          where: { id: userId },
+          update: {},
+          create: {
+            id: userId,
+            name: "Admin System",
+            email: "admin@fortresspreservation.com",
+            role: "ADMIN"
+          }
+        });
+      } catch (err) {
+        console.error("Failed to upsert admin user:", err);
+      }
+    }
   }
 
   const slug =

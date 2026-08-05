@@ -1,11 +1,19 @@
 import { PrismaClient } from "@prisma/client"
+import { Pool } from "pg"
+import { PrismaPg } from "@prisma/adapter-pg"
 
 const prismaClientSingleton = () => {
   try {
-    return new PrismaClient()
+    const connectionString = process.env.DATABASE_URL
+    if (!connectionString) {
+      throw new Error("DATABASE_URL is not defined in environment variables.")
+    }
+    const pool = new Pool({ connectionString })
+    const adapter = new PrismaPg(pool)
+    return new PrismaClient({ adapter })
   } catch (error: unknown) {
-    if (error instanceof Error && error.message.includes("driver adapter is required")) {
-      console.warn("Bypassing Prisma edge initialization error for build.")
+    if (error instanceof Error && (error.message.includes("driver adapter") || error.message.includes("DATABASE_URL"))) {
+      console.warn("Bypassing Prisma edge/build initialization error.")
       return new Proxy({}, {
         get(_target, prop) {
           if (prop === "$connect" || prop === "$disconnect") return async () => {}
