@@ -1,6 +1,8 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
+import { ADMIN_COOKIE_NAME, ADMIN_COOKIE_VALUE } from "@/auth";
 
 export async function saveGeneratedPost({
   title,
@@ -23,32 +25,34 @@ export async function saveGeneratedPost({
   secondaryKeywords?: string;
   status?: "DRAFT" | "PUBLISHED" | "SCHEDULED";
 }) {
-  const session = await auth();
-  let userId = session?.user?.id;
+  // Auth check via the cookie-based admin session (NextAuth was removed).
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(ADMIN_COOKIE_NAME);
+  if (!sessionCookie || sessionCookie.value !== ADMIN_COOKIE_VALUE) {
+    return { success: false, error: "You must be logged in to publish a post." };
+  }
 
-  if (!userId) {
+  let userId = "admin-system-id";
+  try {
     const existingAdmin = await prisma.user.findUnique({
       where: { email: "admin@fortresspreservation.com" }
     });
     if (existingAdmin) {
       userId = existingAdmin.id;
     } else {
-      userId = "admin-system-id";
-      try {
-        await prisma.user.upsert({
-          where: { id: userId },
-          update: {},
-          create: {
-            id: userId,
-            name: "Admin System",
-            email: "admin@fortresspreservation.com",
-            role: "ADMIN"
-          }
-        });
-      } catch (err) {
-        console.error("Failed to upsert admin user:", err);
-      }
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: {},
+        create: {
+          id: userId,
+          name: "Admin System",
+          email: "admin@fortresspreservation.com",
+          role: "ADMIN"
+        }
+      });
     }
+  } catch (err) {
+    console.error("Failed to resolve admin user:", err);
   }
 
   const slug =
