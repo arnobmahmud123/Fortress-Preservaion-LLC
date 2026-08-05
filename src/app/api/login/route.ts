@@ -13,10 +13,19 @@ export async function POST(request: NextRequest) {
       email?.trim().toLowerCase() === ADMIN_EMAIL &&
       password?.trim() === ADMIN_PASSWORD
     ) {
+      // Determine if the request is over HTTPS.
+      // Cloudflare sets "x-forwarded-proto"; local dev (http://localhost) won't.
+      const proto =
+        request.headers.get("x-forwarded-proto") ||
+        new URL(request.url).protocol.replace(":", "");
+      const isSecure = proto === "https";
+
       const response = NextResponse.json({ success: true });
       response.cookies.set(ADMIN_COOKIE_NAME, ADMIN_COOKIE_VALUE, {
         httpOnly: true,
-        secure: true,
+        // Only mark the cookie Secure over HTTPS. This keeps login working on
+        // http://localhost for local dev while remaining secure in production.
+        secure: isSecure,
         sameSite: "lax",
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: "/",
@@ -34,10 +43,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function DELETE() {
-  const response = NextResponse.json({ success: true });
-  response.cookies.delete(ADMIN_COOKIE_NAME);
-  return response;
 }
