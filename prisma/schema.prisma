@@ -2,24 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-}
-
-enum Role {
-  ADMIN
-  EDITOR
-  WRITER
-  VIEWER
-}
-
-enum PostStatus {
-  DRAFT
-  SCHEDULED
-  PUBLISHED
+  provider = "sqlite"
 }
 
 model User {
@@ -28,7 +16,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  role          Role      @default(VIEWER)
+  role          String    @default("VIEWER")
   posts         Post[]
   accounts      Account[]
   sessions      Session[]
@@ -42,12 +30,12 @@ model Account {
   type               String
   provider           String
   providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
+  refresh_token      String?
+  access_token       String?
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String?  @db.Text
+  id_token           String?
   session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -75,9 +63,9 @@ model Post {
   id               String     @id @default(cuid())
   title            String
   slug             String     @unique
-  content          String     @db.Text
-  excerpt          String?    @db.Text
-  status           PostStatus @default(DRAFT)
+  content          String
+  excerpt          String?
+  status           String     @default("DRAFT")
   featuredImage    String?
   
   // SEO Meta
@@ -86,7 +74,7 @@ model Post {
   focusKeyword     String?
   secondaryKeywords String?
   seoScore         Int?       @default(0)
-  schemaMarkup     String?    @db.Text
+  schemaMarkup     String?
   
   authorId         String
   author           User       @relation(fields: [authorId], references: [id])

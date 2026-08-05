@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client"
-import { Pool } from "pg"
-import { PrismaPg } from "@prisma/adapter-pg"
+import { PrismaD1 } from "@prisma/adapter-d1"
 
 const prismaClientSingleton = () => {
   try {
-    const connectionString = process.env.DATABASE_URL
-    if (!connectionString) {
-      throw new Error("DATABASE_URL is not defined in environment variables.")
+    const d1 = process.env.DB as any
+    if (d1) {
+      console.log("[Prisma] Found D1 binding. Using PrismaD1 driver adapter.")
+      const adapter = new PrismaD1(d1)
+      return new PrismaClient({ adapter })
     }
-    const pool = new Pool({ connectionString })
-    const adapter = new PrismaPg(pool)
-    return new PrismaClient({ adapter })
+    console.log("[Prisma] No D1 binding found. Using local SQLite client.")
+    return new PrismaClient()
   } catch (error: unknown) {
       if (!globalThis.mockDbPosts) {
         globalThis.mockDbPosts = [];

@@ -19,6 +19,13 @@
       "bucket_name": "property-preservation-cms-opennext-cache"
     }
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "property-preservation-cms",
+      "database_id": "456aa094-27ce-46e8-8571-ebf7f382ef75"
+    }
+  ],
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
