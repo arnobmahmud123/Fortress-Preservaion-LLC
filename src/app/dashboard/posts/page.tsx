@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { saveGeneratedPost, getPosts, deletePost, updatePostStatus } from "@/app/actions/post-actions";
+import { saveGeneratedPost, getPosts, deletePost, updatePostStatus, updatePost } from "@/app/actions/post-actions";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 
 interface PostItem {
   id: string;
   title: string;
   slug: string;
-  excerpt: string | null;
+  content?: string;
+  excerpt?: string | null;
   status: string;
+  featuredImage?: string | null;
   createdAt: string | Date;
 }
 
@@ -17,6 +19,7 @@ export default function AdminPostsPage() {
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingPost, setEditingPost] = useState<PostItem | null>(null);
 
   // New Post Form State
   const [title, setTitle] = useState("");
@@ -44,24 +47,72 @@ export default function AdminPostsPage() {
     if (!title || !content) return;
     setSaving(true);
 
-    const res = await saveGeneratedPost({
-      title,
-      content,
-      excerpt,
-      status,
-      seoTitle: title,
-      metaDescription: excerpt || title,
-      featuredImage: category === "Field Operations" ? "/images/contractor_preservation.jpg" : category === "REO Management" ? "/images/contractor_reo.jpg" : "/images/contractor_inspection.jpg"
-    });
+    const featuredImage = category === "Field Operations" 
+      ? "/images/contractor_preservation.jpg" 
+      : category === "REO Management" 
+        ? "/images/contractor_reo.jpg" 
+        : "/images/contractor_inspection.jpg";
+
+    let res;
+    if (editingPost) {
+      res = await updatePost(editingPost.id, {
+        title,
+        content,
+        excerpt,
+        status,
+        seoTitle: title,
+        metaDescription: excerpt || title,
+        featuredImage
+      });
+    } else {
+      res = await saveGeneratedPost({
+        title,
+        content,
+        excerpt,
+        status,
+        seoTitle: title,
+        metaDescription: excerpt || title,
+        featuredImage
+      });
+    }
 
     if (res.success) {
       setTitle("");
       setExcerpt("");
       setContent("");
+      setEditingPost(null);
       setShowCreateModal(false);
       fetchPosts();
     }
     setSaving(false);
+  };
+
+  const handleStartCreate = () => {
+    setEditingPost(null);
+    setTitle("");
+    setExcerpt("");
+    setContent("");
+    setCategory("Compliance");
+    setStatus("PUBLISHED");
+    setShowCreateModal(true);
+  };
+
+  const handleStartEdit = (post: PostItem) => {
+    setEditingPost(post);
+    setTitle(post.title);
+    setExcerpt(post.excerpt || "");
+    setContent(post.content || "");
+    
+    if (post.featuredImage?.includes("preservation")) {
+      setCategory("Field Operations");
+    } else if (post.featuredImage?.includes("reo")) {
+      setCategory("REO Management");
+    } else {
+      setCategory("Compliance");
+    }
+    
+    setStatus(post.status as "DRAFT" | "PUBLISHED");
+    setShowCreateModal(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -84,7 +135,7 @@ export default function AdminPostsPage() {
           <p className="text-slate-400 text-xs mt-1">Create, edit, publish, and delete blog articles using the Next-Gen Rich Media Editor</p>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={handleStartCreate}
           className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-500/10 flex items-center gap-2 self-start"
         >
           <span>+</span> Create New Blog Post
@@ -98,7 +149,7 @@ export default function AdminPostsPage() {
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>✍️</span> Create & Edit Article (Next-Gen Rich Editor)
+                  <span>✍️</span> {editingPost ? "Edit Article" : "Create & Edit Article"} (Next-Gen Rich Editor)
                 </h2>
                 <p className="text-xs text-slate-400">Use headings H1-H6, bold/italic, upload photos & videos, and insert callout boxes.</p>
               </div>
@@ -176,7 +227,7 @@ export default function AdminPostsPage() {
                   disabled={saving}
                   className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-amber-500/20"
                 >
-                  {saving ? "Saving Post..." : "Publish Article"}
+                  {saving ? (editingPost ? "Saving Changes..." : "Publishing...") : (editingPost ? "Save Changes" : "Publish Article")}
                 </button>
               </div>
             </form>
@@ -192,7 +243,7 @@ export default function AdminPostsPage() {
           <div className="p-12 text-center space-y-3">
             <p className="text-slate-400 text-sm">No blog posts found in database.</p>
             <button
-              onClick={() => setShowCreateModal(true)}
+              onClick={handleStartCreate}
               className="px-4 py-2 bg-amber-400 text-slate-950 font-bold text-xs uppercase rounded-lg"
             >
               Create Your First Post
@@ -214,7 +265,19 @@ export default function AdminPostsPage() {
                   <tr key={p.id} className="hover:bg-[#0F2448]/40 transition-colors">
                     <td className="p-4 font-semibold text-white">
                       <div>{p.title}</div>
-                      <div className="text-[10px] text-slate-500 font-mono mt-0.5">/blog/{p.slug}</div>
+                      <div className="text-[10px] text-slate-500 font-mono mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <span>/blog/{p.slug}</span>
+                        {p.status === "PUBLISHED" && (
+                          <a
+                            href={`/blog/${p.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-amber-400 hover:text-amber-300 font-bold uppercase tracking-wider text-[8px] border border-amber-500/30 px-1.5 py-0.5 rounded bg-amber-500/5 hover:bg-amber-500/10 transition-colors"
+                          >
+                            Visit Post ↗
+                          </a>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4">
                       <button
@@ -232,6 +295,12 @@ export default function AdminPostsPage() {
                       {new Date(p.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right space-x-2">
+                      <button
+                        onClick={() => handleStartEdit(p)}
+                        className="px-2.5 py-1 bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 rounded-lg text-[10px] font-semibold transition-colors"
+                      >
+                        Edit
+                      </button>
                       <button
                         onClick={() => handleDelete(p.id)}
                         className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-semibold transition-colors"

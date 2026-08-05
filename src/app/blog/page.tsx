@@ -142,7 +142,7 @@ export default async function BlogPage() {
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-4 mt-auto">
                   <span className="text-xs font-medium text-slate-300">By {post.author}</span>
-                  <Link href={`/dashboard`} className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                  <Link href={`/blog/${post.slug}`} className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1">
                     Read Article →
                   </Link>
                 </div>
