@@ -12,7 +12,31 @@ const prismaClientSingleton = () => {
     const adapter = new PrismaPg(pool)
     return new PrismaClient({ adapter })
   } catch (error: unknown) {
-      console.warn("Bypassing Prisma edge/build initialization error. Using functional mock client.")
+      if (!globalThis.mockDbPosts) {
+        globalThis.mockDbPosts = [
+          {
+            id: "mock-post-1",
+            title: "Compliance & Safety in Preservation Guide 2025",
+            slug: "compliance-safety-preservation-guide-2025",
+            content: `
+              <p>Lawn maintenance and properties winterization must be performed during the designated season. Always take clear photos before and after work is performed to guarantee FHA/HUD audit compliance.</p>
+              <h3>FHA/HUD Guidelines Quick View</h3>
+              <p>Ensure that water lines are blown dry with air pressure, water meters are disconnected and stored, and anti-freeze is poured into traps.</p>
+              <blockquote>Always ensure contractor safety protocols are followed in full.</blockquote>
+              <p>This article serves as the standard operational guide for all contractors working with Fortress Preservation LLC in the 2025-2026 fiscal years.</p>
+            `,
+            excerpt: "Learn the latest compliance guidelines.",
+            status: "PUBLISHED",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            author: {
+              id: "admin-system-id",
+              name: "Admin System"
+            }
+          }
+        ];
+      }
+
       const mockModelHandler = (modelName: string) => {
         return new Proxy({}, {
           get(_target, method) {
@@ -21,18 +45,12 @@ const prismaClientSingleton = () => {
               
               if (method === "findMany") {
                 if (modelName === "post") {
-                  return [
-                    {
-                      id: "mock-post-1",
-                      title: "Compliance & Safety in Preservation Guide 2025",
-                      slug: "compliance-safety-preservation-guide-2025",
-                      content: "<p>This is a mock compliance article.</p>",
-                      excerpt: "Learn the latest compliance guidelines.",
-                      status: "PUBLISHED",
-                      createdAt: new Date(),
-                      updatedAt: new Date(),
-                    }
-                  ]
+                  const statusFilter = args?.where?.status;
+                  const posts = globalThis.mockDbPosts || [];
+                  if (statusFilter) {
+                    return posts.filter(p => p.status === statusFilter);
+                  }
+                  return posts;
                 }
                 return []
               }
@@ -47,46 +65,70 @@ const prismaClientSingleton = () => {
                   }
                 }
                 if (modelName === "post") {
+                  const slug = args?.where?.slug;
+                  const id = args?.where?.id;
+                  const posts = globalThis.mockDbPosts || [];
+                  const found = posts.find(p => (slug && p.slug === slug) || (id && p.id === id));
+                  if (found) return found;
+                  // If not found, return a default mock post to avoid 404
                   return {
                     id: "mock-post-1",
-                    title: args?.where?.slug ? args.where.slug.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Compliance & Safety in Preservation Guide 2025",
-                    slug: args?.where?.slug || "compliance-safety-preservation-guide-2025",
-                    content: `
-                      <p>Lawn maintenance and properties winterization must be performed during the designated season. Always take clear photos before and after work is performed to guarantee FHA/HUD audit compliance.</p>
-                      <h3>FHA/HUD Guidelines Quick View</h3>
-                      <p>Ensure that water lines are blown dry with air pressure, water meters are disconnected and stored, and anti-freeze is poured into traps.</p>
-                      <blockquote>Always ensure contractor safety protocols are followed in full.</blockquote>
-                      <p>This article serves as the standard operational guide for all contractors working with Fortress Preservation LLC in the 2025-2026 fiscal years.</p>
-                    `,
+                    title: slug ? slug.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Compliance & Safety in Preservation Guide 2025",
+                    slug: slug || "compliance-safety-preservation-guide-2025",
+                    content: `<p>Lawn maintenance and properties winterization must be performed during the designated season. Always take clear photos before and after work is performed to guarantee FHA/HUD audit compliance.</p>`,
                     excerpt: "Learn the latest compliance guidelines.",
                     status: "PUBLISHED",
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                    author: {
-                      id: "admin-system-id",
-                      name: "Admin System"
-                    }
-                  }
+                    author: { id: "admin-system-id", name: "Admin System" }
+                  };
                 }
                 return null
               }
               
               if (method === "create" || method === "upsert" || method === "update") {
                 const data = args?.data || args?.create || args?.update || {}
-                return {
-                  id: args?.where?.id || data.id || "mock-id-" + Math.floor(Math.random() * 10000),
+                const id = args?.where?.id || data.id || "mock-id-" + Math.floor(Math.random() * 10000);
+                
+                const posts = globalThis.mockDbPosts || [];
+                const existingIdx = posts.findIndex(p => p.id === id);
+                
+                const postObj = {
+                  id,
                   createdAt: new Date(),
                   updatedAt: new Date(),
-                  slug: data.slug || "mock-slug",
+                  slug: data.slug || (data.title ? data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") : "mock-slug") + "-" + Math.floor(Math.random() * 1000),
                   title: data.title || "Mock Title",
                   content: data.content || "Mock Content",
+                  excerpt: data.excerpt || (data.content ? data.content.replace(/<[^>]*>/g, "").slice(0, 150) + "..." : "Mock Excerpt"),
                   status: data.status || "PUBLISHED",
+                  featuredImage: data.featuredImage || "/images/contractor_inspection.jpg",
+                  author: {
+                    id: "admin-system-id",
+                    name: "Admin System"
+                  },
                   ...data,
+                };
+                
+                if (existingIdx > -1) {
+                  posts[existingIdx] = { ...posts[existingIdx], ...postObj };
+                } else {
+                  posts.unshift(postObj);
                 }
+                
+                globalThis.mockDbPosts = posts;
+                return postObj;
               }
               
               if (method === "delete") {
-                return { id: args?.where?.id || "mock-id" }
+                const id = args?.where?.id;
+                if (modelName === "post" && id) {
+                  const posts = globalThis.mockDbPosts || [];
+                  const deletedPost = posts.find(p => p.id === id);
+                  globalThis.mockDbPosts = posts.filter(p => p.id !== id);
+                  return deletedPost || { id };
+                }
+                return { id: id || "mock-id" }
               }
               
               return null
@@ -107,6 +149,7 @@ const prismaClientSingleton = () => {
 
 declare global {
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
+  var mockDbPosts: any[] | undefined
 }
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
