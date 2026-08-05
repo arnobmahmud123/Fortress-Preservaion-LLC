@@ -81,6 +81,7 @@ model Post {
   
   categories       Category[]
   tags             Tag[]
+  comments         Comment[]
   
   publishedAt      DateTime?
   createdAt        DateTime   @default(now())
@@ -102,4 +103,15 @@ model Tag {
   slug      String   @unique
   posts     Post[]
   createdAt DateTime @default(now())
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  content     String
+  authorName  String
+  authorEmail String
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

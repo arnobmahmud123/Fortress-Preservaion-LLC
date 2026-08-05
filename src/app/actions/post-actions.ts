@@ -178,3 +178,47 @@ export async function updatePost(
   }
 }
 
+export async function addComment({
+  postId,
+  authorName,
+  authorEmail,
+  content,
+}: {
+  postId: string;
+  authorName: string;
+  authorEmail: string;
+  content: string;
+}) {
+  if (!postId || !authorName.trim() || !authorEmail.trim() || !content.trim()) {
+    return { success: false, error: "All fields are required." };
+  }
+
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        postId,
+        authorName: authorName.trim(),
+        authorEmail: authorEmail.trim().toLowerCase(),
+        content: content.trim(),
+      },
+    });
+    return { success: true, comment };
+  } catch (error: any) {
+    console.error("Add Comment Error:", error);
+    return { success: false, error: "Failed to add comment to database." };
+  }
+}
+
+export async function getComments(postId: string) {
+  try {
+    const comments = await prisma.comment.findMany({
+      where: { postId },
+      orderBy: { createdAt: "asc" },
+    });
+    return { success: true, comments };
+  } catch (error) {
+    console.error("Get Comments Error:", error);
+    return { success: false, comments: [] };
+  }
+}
+

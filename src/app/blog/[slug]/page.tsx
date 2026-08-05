@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getPostBySlug } from "@/app/actions/post-actions";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, BookOpen } from "lucide-react";
+import { CommentSection } from "@/components/blog/CommentSection";
 
 export const dynamic = "force-dynamic";
 
@@ -148,6 +149,9 @@ export default async function BlogPostDetailPage({
               prose-li:mb-2"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+
+          {/* Dynamic Comment Section */}
+          <CommentSection postId={post.id} />
         </article>
       </main>
 
