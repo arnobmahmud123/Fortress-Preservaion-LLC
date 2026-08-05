@@ -110,11 +110,11 @@ export default function RichTextEditor({
   // ── Sync value → editor (only when value changes from outside) ────────────
   useEffect(() => {
     const el = editorRef.current;
-    if (!el) return;
-    if (value !== localValueRef.current) {
+    if (el && value !== el.innerHTML) {
       el.innerHTML = value || "";
-      localValueRef.current = value;
     }
+    setHtmlSource(value || "");
+    localValueRef.current = value;
   }, [value]);
 
   // ── Notify parent on every keystroke / mutation ───────────────────────────
@@ -600,7 +600,10 @@ export default function RichTextEditor({
         {mode === "HTML" && (
           <textarea
             value={htmlSource}
-            onChange={(e) => setHtmlSource(e.target.value)}
+            onChange={(e) => {
+              setHtmlSource(e.target.value);
+              onChange(e.target.value);
+            }}
             style={{ minHeight }}
             className="w-full p-6 bg-[#071120] text-emerald-300 font-mono text-sm leading-relaxed focus:outline-none resize-y border-none"
             spellCheck={false}
