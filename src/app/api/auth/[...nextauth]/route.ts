@@ -1,3 +1,2 @@
-import { GET, POST } from "@/auth"
-
-export { GET, POST }
+// NextAuth has been removed. Auth is now handled by /api/login route.
+export {};

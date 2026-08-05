@@ -2,16 +2,18 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { AIChatWidget } from "@/components/ai-chat-widget"
 import { redirect } from "next/navigation"
-import { auth } from "@/auth"
+import { cookies } from "next/headers"
+import { ADMIN_COOKIE_NAME, ADMIN_COOKIE_VALUE } from "@/auth"
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const session = await auth();
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(ADMIN_COOKIE_NAME);
 
-  if (!session || session.user?.role !== "ADMIN") {
+  if (!sessionCookie || sessionCookie.value !== ADMIN_COOKIE_VALUE) {
     redirect("/login");
   }
 
