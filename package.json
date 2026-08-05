@@ -10,7 +10,8 @@
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "node scripts/patch-opennext.js && prisma generate"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.33",
@@ -28,7 +29,6 @@
     "next": "16.3.0",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.22.0",
-    "pg-cloudflare": "file:./stubs/pg-cloudflare",
     "react": "19.2.8",
     "react-day-picker": "^10.0.1",
     "react-dom": "19.2.8",
