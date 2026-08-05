@@ -1,49 +1,12 @@
 import Link from "next/link";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export const revalidate = 60;
 
-const fallbackPosts = [
-  {
-    id: "1",
-    title: "2025 Fannie Mae Property Preservation Guidelines Update",
-    slug: "2025-fannie-mae-guidelines-update",
-    excerpt: "Key changes to allowable costs, winterization windows, and photographic audit standards for Fannie Mae servicers.",
-    category: "Compliance",
-    author: "David Kim",
-    publishedAt: "May 14, 2025",
-    readTime: "6 min read",
-    image: "/images/contractor_inspection.jpg"
-  },
-  {
-    id: "2",
-    title: "Best Practices for Winterizing Vacant REO Properties",
-    slug: "best-practices-winterizing-vacant-reo",
-    excerpt: "How to prevent freeze damage, pressure-test plumbing systems, and document compliance for HUD & FHA properties.",
-    category: "Field Operations",
-    author: "Sarah Richardson",
-    publishedAt: "Apr 28, 2025",
-    readTime: "8 min read",
-    image: "/images/contractor_preservation.jpg"
-  },
-  {
-    id: "3",
-    title: "Optimizing REO Property Turnover Timelines",
-    slug: "optimizing-reo-turnover-timelines",
-    excerpt: "Strategies for asset managers to reduce holding times from initial eviction to market-ready listing.",
-    category: "REO Management",
-    author: "James Mitchell",
-    publishedAt: "Apr 10, 2025",
-    readTime: "5 min read",
-    image: "/images/contractor_reo.jpg"
-  }
-];
-
 export default async function BlogPage() {
-  let posts = fallbackPosts;
+  let posts: any[] = [];
 
   try {
-    const prisma = new PrismaClient();
     const dbPosts = await prisma.post.findMany({
       where: { status: "PUBLISHED" },
       orderBy: { publishedAt: "desc" },
@@ -59,16 +22,16 @@ export default async function BlogPage() {
         id: p.id,
         title: p.title,
         slug: p.slug,
-        excerpt: p.excerpt || p.content.slice(0, 150) + "...",
-        category: p.categories[0]?.name || "Preservation",
+        excerpt: p.excerpt || (p.content ? p.content.replace(/<[^>]*>/g, "").slice(0, 150) + "..." : ""),
+        category: p.categories?.[0]?.name || "Preservation",
         author: p.author?.name || "Fortress Team",
         publishedAt: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent",
         readTime: "5 min read",
         image: p.featuredImage || "/images/contractor_inspection.jpg"
       }));
     }
-  } catch {
-    // fallback to static posts if DB is unreachable during static collection
+  } catch (error) {
+    console.error("Failed to query database posts on blog page:", error);
   }
 
   return (
@@ -100,6 +63,7 @@ export default async function BlogPage() {
       </header>
 
       {/* Hero Section */}
+      <nav className="hidden" />
       <section className="relative py-20 bg-gradient-to-b from-[#0B1D3A] to-[#071120] border-b border-slate-800">
         <div className="container mx-auto px-4 text-center max-w-4xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-6">
@@ -116,40 +80,53 @@ export default async function BlogPage() {
 
       {/* Articles Grid */}
       <main className="container mx-auto px-4 py-16 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <article key={post.id} className="bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 flex flex-col">
-              <div className="h-52 bg-slate-800 relative overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={post.image} alt={post.title} className="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-500" />
-                <span className="absolute top-4 left-4 px-3 py-1 bg-[#0B1D3A]/90 backdrop-blur-sm text-amber-400 text-xs font-semibold rounded-full border border-amber-500/20">
-                  {post.category}
-                </span>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
-                    <span>{post.publishedAt}</span>
-                    <span>•</span>
-                    <span>{post.readTime}</span>
+        {posts.length === 0 ? (
+          <div className="text-center py-16 bg-[#0B1D3A]/40 border border-slate-800 rounded-2xl p-8 max-w-xl mx-auto space-y-4 shadow-xl">
+            <span className="text-4xl">📝</span>
+            <h3 className="text-lg font-bold text-white">No articles published yet</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              Insights, guides, and compliance standards will appear here once they are published from the Post Manager.
+            </p>
+            <Link href="/dashboard/posts" className="inline-block px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-amber-500/10 transition-all">
+              Write an Article
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
+              <article key={post.id} className="bg-[#0B1D3A]/60 border border-slate-800 hover:border-amber-500/30 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 flex flex-col">
+                <div className="h-52 bg-slate-800 relative overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-500" />
+                  <span className="absolute top-4 left-4 px-3 py-1 bg-[#0B1D3A]/90 backdrop-blur-sm text-amber-400 text-xs font-semibold rounded-full border border-amber-500/20">
+                    {post.category}
+                  </span>
+                </div>
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
+                      <span>{post.publishedAt}</span>
+                      <span>•</span>
+                      <span>{post.readTime}</span>
+                    </div>
+                    <h2 className="text-xl font-bold text-white mb-3 hover:text-amber-400 transition-colors leading-snug">
+                      {post.title}
+                    </h2>
+                    <p className="text-slate-400 text-sm line-clamp-3 mb-6 leading-relaxed">
+                      {post.excerpt}
+                    </p>
                   </div>
-                  <h2 className="text-xl font-bold text-white mb-3 hover:text-amber-400 transition-colors leading-snug">
-                    {post.title}
-                  </h2>
-                  <p className="text-slate-400 text-sm line-clamp-3 mb-6 leading-relaxed">
-                    {post.excerpt}
-                  </p>
+                  <div className="flex items-center justify-between border-t border-slate-800 pt-4 mt-auto">
+                    <span className="text-xs font-medium text-slate-300">By {post.author}</span>
+                    <Link href={`/blog/${post.slug}`} className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                      Read Article →
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between border-t border-slate-800 pt-4 mt-auto">
-                  <span className="text-xs font-medium text-slate-300">By {post.author}</span>
-                  <Link href={`/blog/${post.slug}`} className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1">
-                    Read Article →
-                  </Link>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* Footer */}

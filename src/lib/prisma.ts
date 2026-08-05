@@ -13,28 +13,7 @@ const prismaClientSingleton = () => {
     return new PrismaClient({ adapter })
   } catch (error: unknown) {
       if (!globalThis.mockDbPosts) {
-        globalThis.mockDbPosts = [
-          {
-            id: "mock-post-1",
-            title: "Compliance & Safety in Preservation Guide 2025",
-            slug: "compliance-safety-preservation-guide-2025",
-            content: `
-              <p>Lawn maintenance and properties winterization must be performed during the designated season. Always take clear photos before and after work is performed to guarantee FHA/HUD audit compliance.</p>
-              <h3>FHA/HUD Guidelines Quick View</h3>
-              <p>Ensure that water lines are blown dry with air pressure, water meters are disconnected and stored, and anti-freeze is poured into traps.</p>
-              <blockquote>Always ensure contractor safety protocols are followed in full.</blockquote>
-              <p>This article serves as the standard operational guide for all contractors working with Fortress Preservation LLC in the 2025-2026 fiscal years.</p>
-            `,
-            excerpt: "Learn the latest compliance guidelines.",
-            status: "PUBLISHED",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            author: {
-              id: "admin-system-id",
-              name: "Admin System"
-            }
-          }
-        ];
+        globalThis.mockDbPosts = [];
       }
 
       const mockModelHandler = (modelName: string) => {
