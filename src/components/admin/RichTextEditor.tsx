@@ -30,6 +30,8 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Palette,
+  Highlighter,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -127,6 +129,52 @@ export default function RichTextEditor({
     localValueRef.current = el.innerHTML;
     onChange(el.innerHTML);
   }, [onChange]);
+
+  // ── Intercept paste and sanitize inline styles (dark text, white backgrounds) ──
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData("text/plain");
+    const html = e.clipboardData.getData("text/html");
+
+    if (html) {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = html;
+
+      // Sanitize style attributes
+      const allStyled = tempDiv.querySelectorAll("[style]");
+      allStyled.forEach((el) => {
+        const style = el.getAttribute("style") || "";
+        const newStyle = style
+          .replace(/color\s*:\s*([^;]+)/gi, (match, val) => {
+            const isDark = val.includes("black") || val.includes("#000") || /rgb\s*\(\s*0\s*,\s*0\s*,\s*0\s*\)/i.test(val);
+            return isDark ? "" : match;
+          })
+          .replace(/background-color\s*:\s*([^;]+)/gi, (match, val) => {
+            const isLight = val.includes("white") || val.includes("#fff") || /rgb\s*\(\s*255\s*,\s*255\s*,\s*255\s*\)/i.test(val);
+            return isLight ? "" : match;
+          });
+
+        if (newStyle.trim()) {
+          el.setAttribute("style", newStyle);
+        } else {
+          el.removeAttribute("style");
+        }
+      });
+
+      // Remove obsolete/dark font attributes
+      const fonts = tempDiv.querySelectorAll("font");
+      fonts.forEach((font) => {
+        const color = font.getAttribute("color") || "";
+        if (color === "black" || color === "#000" || color === "#000000" || color.startsWith("rgb(0")) {
+          font.removeAttribute("color");
+        }
+      });
+
+      document.execCommand("insertHTML", false, tempDiv.innerHTML);
+    } else {
+      document.execCommand("insertText", false, text);
+    }
+  }, []);
 
   // ── Save cursor before toolbar button steals focus ────────────────────────
   const handleEditorMouseUp = () => {
@@ -389,6 +437,31 @@ export default function RichTextEditor({
             </TB>
           </TBGroup>
 
+          {/* Colors (Text & Background) */}
+          <div className="flex items-center bg-[#071120] p-1 rounded-lg border border-slate-800 gap-1.5 h-8">
+            <div className="flex items-center gap-1 pl-1" title="Text Color">
+              <Palette className="w-3.5 h-3.5 text-slate-400" />
+              <input
+                type="color"
+                onMouseDown={() => { savedRange.current = saveSelection(); }}
+                onChange={(e) => doFormat("foreColor", e.target.value)}
+                className="color-picker-input"
+                defaultValue="#f1f5f9"
+              />
+            </div>
+            <div className="h-4 w-px bg-slate-800" />
+            <div className="flex items-center gap-1 pr-0.5" title="Highlight / Background Color">
+              <Highlighter className="w-3.5 h-3.5 text-slate-400" />
+              <input
+                type="color"
+                onMouseDown={() => { savedRange.current = saveSelection(); }}
+                onChange={(e) => doFormat("hiliteColor", e.target.value)}
+                className="color-picker-input"
+                defaultValue="#071120"
+              />
+            </div>
+          </div>
+
           {/* Alignment */}
           <TBGroup>
             <TB title="Align Left" onClick={() => doFormat("justifyLeft")}>
@@ -511,6 +584,7 @@ export default function RichTextEditor({
           contentEditable={mode === "VISUAL"}
           suppressContentEditableWarning
           onInput={handleInput}
+          onPaste={handlePaste}
           onMouseUp={handleEditorMouseUp}
           onKeyUp={handleEditorKeyUp}
           onFocus={handleEditorMouseUp}
@@ -546,35 +620,73 @@ export default function RichTextEditor({
 
       {/* ── PLACEHOLDER CSS ─────────────────────────────────────── */}
       <style>{`
+        .prose.prose-invert {
+          --tw-prose-body: #e2e8f0;
+          --tw-prose-headings: #f59e0b;
+          --tw-prose-links: #f59e0b;
+          --tw-prose-bold: #ffffff;
+          --tw-prose-counters: #fbbf24;
+          --tw-prose-bullets: #fbbf24;
+          --tw-prose-quotes: #fde68a;
+          --tw-prose-quote-borders: #fbbf24;
+          --tw-prose-code: #fcd34d;
+          --tw-prose-pre-code: #7dd3fc;
+          --tw-prose-pre-bg: #0f172a;
+          --tw-prose-th-borders: #334155;
+          --tw-prose-td-borders: #1e293b;
+        }
+        [contenteditable] {
+          color: #f1f5f9;
+        }
         [contenteditable][data-placeholder]:empty:before {
           content: attr(data-placeholder);
-          color: #64748b !important;
+          color: #64748b;
           pointer-events: none;
           position: absolute;
         }
-        [contenteditable] {
-          color: #f1f5f9 !important;
-        }
-        [contenteditable] h1 { font-size:2rem;font-weight:700;margin:.75rem 0;color:#f59e0b !important; }
-        [contenteditable] h2 { font-size:1.6rem;font-weight:700;margin:.65rem 0;color:#fbbf24 !important; }
-        [contenteditable] h3 { font-size:1.3rem;font-weight:600;margin:.5rem 0;color:#fcd34d !important; }
-        [contenteditable] h4 { font-size:1.1rem;font-weight:600;margin:.5rem 0;color:#fde68a !important; }
-        [contenteditable] h5 { font-size:1rem;font-weight:600;margin:.5rem 0;color:#fef3c7 !important; }
-        [contenteditable] h6 { font-size:.9rem;font-weight:600;margin:.5rem 0;color:#fffbeb !important; }
-        [contenteditable] p  { margin:.5rem 0; color:#e2e8f0 !important; }
-        [contenteditable] ul { list-style:disc;padding-left:1.5rem;margin:.5rem 0; color:#e2e8f0 !important; }
-        [contenteditable] ol { list-style:decimal;padding-left:1.5rem;margin:.5rem 0; color:#e2e8f0 !important; }
-        [contenteditable] li { color:#e2e8f0 !important; }
-        [contenteditable] blockquote { border-left:4px solid #f59e0b;padding:.5rem 1rem;margin:.75rem 0;background:#1e293b;border-radius:0 8px 8px 0;color:#fde68a !important; }
-        [contenteditable] a { color:#f59e0b !important;text-decoration:underline; }
-        [contenteditable] strong { color:#fff !important;font-weight:700; }
+        [contenteditable] h1 { font-size:2rem;font-weight:700;margin:.75rem 0;color:#f59e0b; }
+        [contenteditable] h2 { font-size:1.6rem;font-weight:700;margin:.65rem 0;color:#fbbf24; }
+        [contenteditable] h3 { font-size:1.3rem;font-weight:600;margin:.5rem 0;color:#fcd34d; }
+        [contenteditable] h4 { font-size:1.1rem;font-weight:600;margin:.5rem 0;color:#fde68a; }
+        [contenteditable] h5 { font-size:1rem;font-weight:600;margin:.5rem 0;color:#fef3c7; }
+        [contenteditable] h6 { font-size:.9rem;font-weight:600;margin:.5rem 0;color:#fffbeb; }
+        [contenteditable] p  { margin:.5rem 0; color:#e2e8f0; }
+        [contenteditable] ul { list-style:disc;padding-left:1.5rem;margin:.5rem 0; color:#e2e8f0; }
+        [contenteditable] ol { list-style:decimal;padding-left:1.5rem;margin:.5rem 0; color:#e2e8f0; }
+        [contenteditable] li { color:#e2e8f0; }
+        [contenteditable] blockquote { border-left:4px solid #f59e0b;padding:.5rem 1rem;margin:.75rem 0;background:#1e293b;border-radius:0 8px 8px 0;color:#fde68a; }
+        [contenteditable] a { color:#f59e0b;text-decoration:underline; }
+        [contenteditable] strong { color:#fff;font-weight:700; }
         [contenteditable] em { font-style:italic; }
-        [contenteditable] code { background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;color:#f59e0b !important; }
-        [contenteditable] pre { background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem;font-family:monospace;color:#7dd3fc !important;overflow-x:auto;margin:1rem 0; }
+        [contenteditable] code { background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;color:#f59e0b; }
+        [contenteditable] pre { background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem;font-family:monospace;color:#7dd3fc;overflow-x:auto;margin:1rem 0; }
         [contenteditable] img { max-width:100%;border-radius:12px;margin:.75rem 0; }
         [contenteditable] figure { margin:1.5rem 0;text-align:center; }
         [contenteditable] figcaption { color:#94a3b8;font-size:.8rem;margin-top:.5rem; }
         [contenteditable] hr { border:none;border-top:1px solid #334155;margin:1.5rem 0; }
+
+        .color-picker-input {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        }
+        .color-picker-input::-webkit-color-swatch-wrapper {
+          padding: 0;
+        }
+        .color-picker-input::-webkit-color-swatch {
+          border: 1px solid #475569;
+          border-radius: 4px;
+        }
+        .color-picker-input::-moz-color-swatch {
+          border: 1px solid #475569;
+          border-radius: 4px;
+        }
       `}</style>
 
       {/* ── IMAGE MODAL ─────────────────────────────────────────── */}
