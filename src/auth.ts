@@ -1,26 +1,32 @@
+// Prevent NextAuth from throwing configuration errors in serverless edge runtimes due to missing secret
+if (!process.env.AUTH_SECRET) {
+  process.env.AUTH_SECRET = "fortress-preservation-super-secret-key-12345";
+}
+if (!process.env.NEXTAUTH_SECRET) {
+  process.env.NEXTAUTH_SECRET = "fortress-preservation-super-secret-key-12345";
+}
+
 import NextAuth from "next-auth"
 import type { DefaultSession } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/lib/prisma"
-import type { Role } from "@prisma/client"
 
 declare module "next-auth" {
   interface Session {
     user: {
       id?: string
-      role?: Role
+      role?: string
     } & DefaultSession["user"]
   }
 
   interface User {
-    role?: Role
+    role?: string
   }
 }
 
 declare module "@auth/core/jwt" {
   interface JWT {
-    role?: Role
+    role?: string
   }
 }
 
