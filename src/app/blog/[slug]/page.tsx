@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPostBySlug } from "@/app/actions/post-actions";
 import { notFound } from "next/navigation";
+import { Calendar, Clock, BookOpen } from "lucide-react";
 
 export default async function BlogPostDetailPage({
   params,
@@ -23,6 +24,17 @@ export default async function BlogPostDetailPage({
         year: "numeric",
       })
     : "Recent";
+
+  const publishedTime = post.publishedAt
+    ? new Date(post.publishedAt).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
+    : "";
+
+  const wordCount = post.content ? post.content.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length : 0;
+  const readTime = Math.max(1, Math.ceil(wordCount / 225));
 
   return (
     <div className="min-h-screen bg-[#071120] text-slate-100 font-sans">
@@ -59,20 +71,58 @@ export default async function BlogPostDetailPage({
         </Link>
 
         <article className="space-y-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-xs text-slate-400">
-              <span className="px-2.5 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full font-semibold">
+          {/* Header Metadata Card */}
+          <div className="bg-[#0B1D3A]/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl backdrop-blur-sm relative overflow-hidden">
+            {/* Ambient Background Glow */}
+            <div className="absolute -top-10 -right-10 w-45 h-45 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider">
                 Preservation Insights
               </span>
-              <span>•</span>
-              <span>{publishedDate}</span>
+              {post.categories && post.categories.length > 0 && (
+                <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+                  {post.categories[0].name}
+                </span>
+              )}
             </div>
+
             <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
               {post.title}
             </h1>
-            <div className="flex items-center gap-3 pt-2 text-sm text-slate-300">
-              <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-amber-400 border border-amber-500/10">FP</div>
-              <span>By {post.author?.name || "Fortress Team"}</span>
+
+            {/* Author and Date/Time Info Row */}
+            <div className="flex flex-wrap items-center justify-between gap-6 border-t border-slate-800/80 pt-6 mt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-black text-slate-950 shadow-md">
+                  {post.author?.name ? post.author.name.slice(0, 2).toUpperCase() : "FP"}
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white leading-tight">
+                    {post.author?.name || "Fortress Team"}
+                  </div>
+                  <div className="text-xs text-slate-400 font-mono">
+                    Author • Contributor
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-300 font-mono bg-slate-900/50 border border-slate-800/60 rounded-2xl px-4 py-3">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{publishedDate}</span>
+                </div>
+                {publishedTime && (
+                  <div className="flex items-center gap-1.5 border-l border-slate-800 pl-4">
+                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{publishedTime}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1.5 border-l border-slate-800 pl-4">
+                  <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{readTime} min read</span>
+                </div>
+              </div>
             </div>
           </div>
 
