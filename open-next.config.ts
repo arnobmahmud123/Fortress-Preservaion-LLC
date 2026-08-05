@@ -10,17 +10,6 @@ const config: OpenNextConfig = {
       tagCache: "dummy",
       queue: "dummy",
     },
-    // Mark native Node.js packages that can't run in Cloudflare Workers as external.
-    // The Prisma proxy fallback in src/lib/prisma.ts handles this gracefully at runtime.
-    esbuildOptions: {
-      external: [
-        "pg",
-        "pg-native",
-        "pg-cloudflare",
-        "@prisma/adapter-pg",
-        "bcrypt",
-      ],
-    },
   },
   edgeExternals: ["node:crypto"],
   middleware: {

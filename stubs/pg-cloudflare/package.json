@@ -1,0 +1,13 @@
+{
+  "name": "pg-cloudflare",
+  "version": "1.1.2",
+  "description": "Stub pg-cloudflare — used so esbuild can resolve the module without needing the real Cloudflare Workers runtime.",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  }
+}

@@ -51,5 +51,8 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "^4.118.0"
+  },
+  "overrides": {
+    "pg-cloudflare": "file:./stubs/pg-cloudflare"
   }
 }
