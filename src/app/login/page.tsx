@@ -4,25 +4,39 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SiteHeader from "@/components/public/SiteHeader";
+import { loginAdmin } from "@/app/actions/post-actions";
+import { AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFillDemo = () => {
     setEmail("admin@fortresspreservation.com");
     setPassword("admin123");
+    setError(null);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate instant secure admin login and redirect to admin panel
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 600);
+    setError(null);
+    try {
+      const res = await loginAdmin(email, password);
+      if (res && !res.success) {
+        setError(res.error || "Login failed. Please check your credentials.");
+        setLoading(false);
+      }
+    } catch (err: any) {
+      if (err.message?.includes("NEXT_REDIRECT") || err.digest?.includes("NEXT_REDIRECT")) {
+        throw err; // Let Next.js handle redirect
+      }
+      setError("Authentication error. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,6 +72,12 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2.5 p-3 px-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold rounded-xl">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Admin Email</label>
               <input

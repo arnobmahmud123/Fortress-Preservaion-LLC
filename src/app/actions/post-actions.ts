@@ -222,3 +222,21 @@ export async function getComments(postId: string) {
   }
 }
 
+export async function loginAdmin(email: string, password: string) {
+  try {
+    const { signIn } = require("@/auth");
+    await signIn("credentials", {
+      email: email.trim(),
+      password: password.trim(),
+      redirectTo: "/dashboard",
+    });
+    return { success: true };
+  } catch (error: any) {
+    if (error.name === "TypeError" || error.message?.includes("NEXT_REDIRECT") || error.digest?.includes("NEXT_REDIRECT")) {
+      throw error; // Let Next.js handle redirect
+    }
+    console.error("Login Server Action Error:", error);
+    return { success: false, error: "Authentication failed. Invalid email or password." };
+  }
+}
+
