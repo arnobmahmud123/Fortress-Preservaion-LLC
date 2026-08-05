@@ -3,9 +3,28 @@ import { PrismaD1 } from "@prisma/adapter-d1"
 
 const prismaClientSingleton = () => {
   try {
-    const d1 = process.env.DB as any
+    let d1: any = undefined;
+
+    // Try to retrieve D1 database from Cloudflare Request Context
+    try {
+      const { getRequestContext } = require("@opennextjs/cloudflare");
+      const ctx = getRequestContext();
+      if (ctx?.env?.DB) {
+        d1 = ctx.env.DB;
+        console.log("[Prisma] Successfully retrieved D1 binding from getRequestContext.");
+      }
+    } catch (e) {
+      // Ignored: getRequestContext is unavailable during build/local dev
+    }
+
+    // Fallback to process.env.DB if polyfilled
+    if (!d1 && process.env.DB) {
+      d1 = process.env.DB;
+      console.log("[Prisma] Successfully retrieved D1 binding from process.env.");
+    }
+
     if (d1) {
-      console.log("[Prisma] Found D1 binding. Using PrismaD1 driver adapter.")
+      console.log("[Prisma] Initializing PrismaClient with PrismaD1 driver adapter.");
       const adapter = new PrismaD1(d1)
       return new PrismaClient({ adapter })
     }

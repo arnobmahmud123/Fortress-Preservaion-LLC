@@ -3,6 +3,8 @@ import { getPostBySlug } from "@/app/actions/post-actions";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, BookOpen } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function BlogPostDetailPage({
   params,
 }: {
