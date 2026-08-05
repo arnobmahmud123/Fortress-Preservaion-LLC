@@ -28,6 +28,13 @@ const prismaClientSingleton = () => {
       const adapter = new PrismaD1(d1)
       return new PrismaClient({ adapter })
     }
+
+    // Standard client won't work on Cloudflare edge. If on edge without D1, throw to trigger fallback mock client.
+    const isCloudflare = typeof globalThis.caches !== "undefined" || process.env.NEXT_RUNTIME === "edge";
+    if (isCloudflare) {
+      throw new Error("No D1 database binding found on Cloudflare edge.");
+    }
+    
     console.log("[Prisma] No D1 binding found. Using local SQLite client.")
     return new PrismaClient()
   } catch (error: unknown) {
