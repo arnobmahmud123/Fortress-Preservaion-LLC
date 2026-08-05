@@ -25,7 +25,12 @@
       "service": "fortresspreservationllc"
     }
   ],
+  "custom_domains": [
+    "fortresspreservationllc.com",
+    "www.fortresspreservationllc.com"
+  ],
   "build": {
     "command": "npx @opennextjs/cloudflare build"
   }
 }
+
