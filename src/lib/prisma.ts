@@ -46,6 +46,28 @@ const prismaClientSingleton = () => {
                     role: "ADMIN"
                   }
                 }
+                if (modelName === "post") {
+                  return {
+                    id: "mock-post-1",
+                    title: args?.where?.slug ? args.where.slug.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Compliance & Safety in Preservation Guide 2025",
+                    slug: args?.where?.slug || "compliance-safety-preservation-guide-2025",
+                    content: `
+                      <p>Lawn maintenance and properties winterization must be performed during the designated season. Always take clear photos before and after work is performed to guarantee FHA/HUD audit compliance.</p>
+                      <h3>FHA/HUD Guidelines Quick View</h3>
+                      <p>Ensure that water lines are blown dry with air pressure, water meters are disconnected and stored, and anti-freeze is poured into traps.</p>
+                      <blockquote>Always ensure contractor safety protocols are followed in full.</blockquote>
+                      <p>This article serves as the standard operational guide for all contractors working with Fortress Preservation LLC in the 2025-2026 fiscal years.</p>
+                    `,
+                    excerpt: "Learn the latest compliance guidelines.",
+                    status: "PUBLISHED",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    author: {
+                      id: "admin-system-id",
+                      name: "Admin System"
+                    }
+                  }
+                }
                 return null
               }
               

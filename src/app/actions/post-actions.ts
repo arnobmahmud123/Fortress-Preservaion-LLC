@@ -121,3 +121,60 @@ export async function updatePostStatus(id: string, status: "DRAFT" | "PUBLISHED"
     return { success: false, error: "Failed to update post status." };
   }
 }
+
+export async function getPostBySlug(slug: string) {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { slug },
+      include: {
+        author: true,
+      },
+    });
+    return { success: true, post };
+  } catch (error) {
+    console.error("Get Post By Slug Error:", error);
+    return { success: false, post: null };
+  }
+}
+
+export async function updatePost(
+  id: string,
+  {
+    title,
+    content,
+    excerpt,
+    status,
+    seoTitle,
+    metaDescription,
+    featuredImage,
+  }: {
+    title: string;
+    content: string;
+    excerpt?: string;
+    status: "DRAFT" | "PUBLISHED";
+    seoTitle?: string;
+    metaDescription?: string;
+    featuredImage?: string;
+  }
+) {
+  try {
+    const post = await prisma.post.update({
+      where: { id },
+      data: {
+        title,
+        content,
+        excerpt: excerpt || content.slice(0, 150) + "...",
+        status,
+        seoTitle,
+        metaDescription,
+        featuredImage,
+        publishedAt: status === "PUBLISHED" ? new Date() : null,
+      },
+    });
+    return { success: true, post };
+  } catch (error) {
+    console.error("Update Post Error:", error);
+    return { success: false, error: "Failed to update post in database." };
+  }
+}
+
