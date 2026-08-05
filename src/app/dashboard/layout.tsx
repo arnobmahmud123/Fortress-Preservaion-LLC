@@ -1,12 +1,20 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { AIChatWidget } from "@/components/ai-chat-widget"
+import { redirect } from "next/navigation"
+import { auth } from "@/auth"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await auth();
+
+  if (!session || session.user?.role !== "ADMIN") {
+    redirect("/login");
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
