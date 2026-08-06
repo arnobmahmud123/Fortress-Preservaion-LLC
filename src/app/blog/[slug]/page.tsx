@@ -129,7 +129,7 @@ export default async function BlogPostDetailPage({
             </div>
           </div>
 
-          {post.featuredImage && (
+          {post.featuredImage && post.featuredImage.trim() !== "" && (
             <div className="h-64 md:h-[450px] bg-slate-800 rounded-2xl overflow-hidden border border-slate-800 relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover opacity-90" />
@@ -143,6 +143,7 @@ export default async function BlogPostDetailPage({
               prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-800 prose-h2:pb-2
               prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
               prose-p:mb-4
+              prose-img:rounded-2xl prose-img:border prose-img:border-slate-800 prose-img:shadow-lg prose-img:my-8 prose-img:mx-auto prose-img:object-cover prose-img:aspect-[16/10] prose-img:w-full prose-img:max-w-2xl
               prose-blockquote:border-l-4 prose-blockquote:border-amber-400 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-400
               prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-4
               prose-ol:list-decimal prose-ol:pl-6 prose-ol:mb-4

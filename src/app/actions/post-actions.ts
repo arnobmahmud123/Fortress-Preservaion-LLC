@@ -70,7 +70,7 @@ export async function saveGeneratedPost({
         slug,
         content,
         excerpt: excerpt || content.slice(0, 150) + "...",
-        featuredImage: featuredImage || "/images/contractor_inspection.jpg",
+        featuredImage: featuredImage || null,
         seoTitle,
         metaDescription,
         focusKeyword,
