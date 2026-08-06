@@ -17,7 +17,6 @@ import {
 // Menu items.
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "AI Content Studio", url: "/dashboard/ai-studio", icon: Bot },
   { title: "Posts", url: "/dashboard/posts", icon: FileText },
   { title: "Categories & Tags", url: "/dashboard/taxonomy", icon: Database },
   { title: "SEO Manager", url: "/dashboard/seo", icon: PenTool },

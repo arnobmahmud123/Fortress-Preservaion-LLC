@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { saveGeneratedPost, getPosts, deletePost, updatePostStatus, updatePost } from "@/app/actions/post-actions";
+import { conductContentResearch } from "@/app/actions/research-actions";
+import { generatePropertyPreservationArticle } from "@/app/actions/ai-actions";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import { Sparkles, Bot, Wand2, RefreshCw, AlertCircle, HelpCircle } from "lucide-react";
 
 interface PostItem {
   id: string;
@@ -13,6 +16,39 @@ interface PostItem {
   status: string;
   featuredImage?: string | null;
   createdAt: string | Date;
+}
+
+// SEO Metadata parser helper
+function parseSeoMetadata(articleText: string) {
+  let cleanContent = articleText;
+  let seoData = {
+    seoTitle: "",
+    metaDescription: "",
+    focusKeyword: "",
+    secondaryKeywords: "",
+  };
+
+  const jsonMatch =
+    articleText.match(/##\s*SEO\s*Metadata[\s\S]*?```json\s*([\s\S]*?)\s*```/i) ||
+    articleText.match(/```json\s*(\{[\s\S]*?"seoTitle"[\s\S]*?\})\s*```/i);
+
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1].trim());
+      seoData.seoTitle = parsed.seoTitle || "";
+      seoData.metaDescription = parsed.metaDescription || "";
+      seoData.focusKeyword = parsed.focusKeyword || "";
+      seoData.secondaryKeywords = Array.isArray(parsed.secondaryKeywords)
+        ? parsed.secondaryKeywords.join(", ")
+        : parsed.secondaryKeywords || "";
+
+      cleanContent = articleText.replace(jsonMatch[0], "").trim();
+    } catch (e) {
+      console.warn("Failed to parse JSON metadata:", e);
+    }
+  }
+
+  return { cleanContent, seoData };
 }
 
 export default function AdminPostsPage() {
@@ -28,6 +64,16 @@ export default function AdminPostsPage() {
   const [category, setCategory] = useState("Compliance");
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("PUBLISHED");
   const [saving, setSaving] = useState(false);
+
+  // Integrated AI Assistant State
+  const [showAiPanel, setShowAiPanel] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [aiAudience, setAiAudience] = useState("Property preservation contractors, vendors, mortgage servicers");
+  const [aiContentType, setAiContentType] = useState("guide");
+  const [aiStyle, setAiStyle] = useState("expert");
+  const [aiLength, setAiLength] = useState("2000");
+  const [aiStep, setAiStep] = useState<"IDLE" | "RESEARCHING" | "GENERATING">("IDLE");
+  const [aiError, setAiError] = useState<string | null>(null);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -94,6 +140,10 @@ export default function AdminPostsPage() {
     setContent("");
     setCategory("Compliance");
     setStatus("PUBLISHED");
+    setShowAiPanel(false);
+    setAiTopic("");
+    setAiStep("IDLE");
+    setAiError(null);
     setShowCreateModal(true);
   };
 
@@ -112,6 +162,7 @@ export default function AdminPostsPage() {
     }
     
     setStatus(post.status as "DRAFT" | "PUBLISHED");
+    setShowAiPanel(false);
     setShowCreateModal(true);
   };
 
@@ -127,6 +178,68 @@ export default function AdminPostsPage() {
     fetchPosts();
   };
 
+  // Run the integrated AI research and writing flow
+  const handleAiGenerate = async () => {
+    if (!aiTopic.trim()) {
+      setAiError("Please enter an article topic or outline prompt.");
+      return;
+    }
+
+    setAiStep("RESEARCHING");
+    setAiError(null);
+
+    try {
+      // Step 1: Conduct live content research for SEO keywords and outlines
+      const resResult = await conductContentResearch(aiTopic);
+      let keyword = "";
+      if (resResult.success && resResult.research) {
+        keyword = resResult.research.keywords?.[0] || "";
+      }
+
+      setAiStep("GENERATING");
+
+      // Step 2: Generate the fully unique, deeply researched HTML content
+      const genResult = await generatePropertyPreservationArticle({
+        topic: aiTopic,
+        audience: aiAudience,
+        contentType: aiContentType,
+        style: aiStyle,
+        length: aiLength,
+      });
+
+      if (genResult.success && genResult.text) {
+        const { cleanContent, seoData } = parseSeoMetadata(genResult.text);
+
+        // Auto-populate the manual creation form states with AI results
+        setTitle(seoData.seoTitle || aiTopic);
+        setExcerpt(seoData.metaDescription || "");
+        setContent(cleanContent);
+        
+        // Auto-assign logical category based on keywords
+        const lowerTopic = aiTopic.toLowerCase();
+        if (lowerTopic.includes("inspect") || lowerTopic.includes("audit") || lowerTopic.includes("hud") || lowerTopic.includes("fha") || lowerTopic.includes("fannie")) {
+          setCategory("Compliance");
+        } else if (lowerTopic.includes("winter") || lowerTopic.includes("grass") || lowerTopic.includes("mow") || lowerTopic.includes("lawn") || lowerTopic.includes("cut")) {
+          setCategory("Field Operations");
+        } else if (lowerTopic.includes("reo") || lowerTopic.includes("debris") || lowerTopic.includes("trash") || lowerTopic.includes("clean") || lowerTopic.includes("board")) {
+          setCategory("REO Management");
+        } else {
+          setCategory("Industry News");
+        }
+
+        // Close the panel and notify success
+        setShowAiPanel(false);
+        setAiStep("IDLE");
+      } else {
+        setAiError(genResult.error || "AI generation failed. Please try again.");
+        setAiStep("IDLE");
+      }
+    } catch (err) {
+      setAiError("An unexpected error occurred during AI generation.");
+      setAiStep("IDLE");
+    }
+  };
+
   return (
     <div className="p-6 space-y-6 text-slate-100 font-sans">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
@@ -136,7 +249,7 @@ export default function AdminPostsPage() {
         </div>
         <button
           onClick={handleStartCreate}
-          className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-500/10 flex items-center gap-2 self-start"
+          className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 flex items-center gap-2 self-start"
         >
           <span>+</span> Create New Blog Post
         </button>
@@ -155,6 +268,115 @@ export default function AdminPostsPage() {
               </div>
               <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-white font-bold text-lg">✕</button>
             </div>
+
+            {/* INTEGRATED AI ASSISTANT PANEL */}
+            {!editingPost && (
+              <div className="border border-amber-500/20 bg-[#071120]/50 rounded-2xl overflow-hidden shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => setShowAiPanel(!showAiPanel)}
+                  className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-transparent hover:from-amber-500/25 transition-all text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <Bot className="w-5 h-5 text-amber-400 animate-pulse" />
+                    <div>
+                      <span className="font-bold text-sm text-white">✨ Draft Article with AI Copilot</span>
+                      <span className="text-[10px] text-amber-400/80 ml-2 font-mono uppercase font-bold bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">Interactive Human Mode</span>
+                    </div>
+                  </div>
+                  <span className="text-slate-400 text-xs font-bold font-mono">
+                    {showAiPanel ? "Collapse AI [-]" : "Expand AI [+]"}
+                  </span>
+                </button>
+
+                {showAiPanel && (
+                  <div className="p-5 border-t border-slate-800 space-y-5 bg-[#0B1D3A]/20">
+                    {aiError && (
+                      <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        <span>{aiError}</span>
+                      </div>
+                    )}
+
+                    {aiStep !== "IDLE" ? (
+                      <div className="py-8 flex flex-col items-center justify-center space-y-4 text-center">
+                        <RefreshCw className="w-10 h-10 text-amber-400 animate-spin" />
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-sm text-white">
+                            {aiStep === "RESEARCHING" ? "Conducting Live SEO Research & Outline..." : "Drafting Human-grade Article & Embedding Stock Images..."}
+                          </h4>
+                          <p className="text-xs text-slate-400 max-w-sm">
+                            {aiStep === "RESEARCHING" 
+                              ? "Analyzing search intent and collecting guidelines." 
+                              : "Writing deep compliance tips and formatting aspect-ratio images."}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="block text-xs font-bold uppercase text-slate-300">Target Topic / Prompt *</label>
+                          <input
+                            type="text"
+                            value={aiTopic}
+                            onChange={(e) => setAiTopic(e.target.value)}
+                            placeholder="e.g. FHA property preservation grass cutting rules and HUD seasonality schedules"
+                            className="w-full px-4 py-2.5 bg-[#071120] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400 font-medium"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="block text-xs font-bold uppercase text-slate-300">Target Audience</label>
+                            <input
+                              type="text"
+                              value={aiAudience}
+                              onChange={(e) => setAiAudience(e.target.value)}
+                              className="w-full px-4 py-2 bg-[#071120] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="block text-xs font-bold uppercase text-slate-300">Content Type</label>
+                            <select
+                              value={aiContentType}
+                              onChange={(e) => setAiContentType(e.target.value)}
+                              className="w-full px-4 py-2 bg-[#071120] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400"
+                            >
+                              <option value="guide">Industry Guide</option>
+                              <option value="howto">How-To Manual</option>
+                              <option value="checklist">Detailed Checklist</option>
+                              <option value="news">Regulatory News Update</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="block text-xs font-bold uppercase text-slate-300">Writing Style</label>
+                            <select
+                              value={aiStyle}
+                              onChange={(e) => setAiStyle(e.target.value)}
+                              className="w-full px-4 py-2 bg-[#071120] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-400"
+                            >
+                              <option value="expert">Expert (Interactive Human)</option>
+                              <option value="professional">Professional Technical</option>
+                              <option value="educational">Educational & Informative</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handleAiGenerate}
+                          className="w-full py-2.5 rounded-xl font-bold bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Wand2 className="w-4 h-4" /> Generate Draft Content & SEO Metadata
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             <form onSubmit={handleCreatePost} className="space-y-6">
               <div>

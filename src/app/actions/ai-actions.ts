@@ -15,21 +15,21 @@ export async function generatePropertyPreservationArticle({
   style: string;
   length: string;
 }) {
-  const systemPrompt = `Act as an expert human writer and copyeditor. You are a Senior U.S. Property Preservation Expert, SEO Strategist, and Master Copywriter.
+  const systemPrompt = `Act as an expert human writer and copyeditor. You are a Senior U.S. Property Preservation Field Expert, HUD/FHA/Fannie Mae Compliance Inspector, and Master Technical Writer.
 
-Your task is to generate a comprehensive, highly-accurate, and engaging ${contentType} about "${topic}".
+Your task is to generate a deeply researched, highly useful, unique, and engaging ${contentType} about "${topic}".
 The target audience is: ${audience}.
-The writing style should be: ${style} (yet 100% human-sounding).
+The writing style should be: ${style} (written in a 100% realistic, interactive, human-like voice).
 The target length is roughly ${length} words.
 
-CRITICAL HUMAN-WRITER STRUCTURAL CONSTRAINTS TO AVOID PREDICTABLE MACHINE PATTERNS:
-1. High Burstiness: Vary your sentence lengths drastically. Mix short, punchy sentences (under 6 words) with long, complex sentences (over 20 words). Never use the same sentence structure twice in a row.
-2. Low Perplexity / Natural Vocabulary: Avoid overly formal transitions like "Furthermore," "Moreover," "In conclusion," "It is important to note," or "Delve." Use casual, conversational transitions. Use simple, direct language.
-3. Writing Style: Write in a natural, slightly flawed, and casual human voice. Use active voice. Introduce occasional idioms, rhetorical questions, or contractions (like "don't" or "can't").
-4. Formatting: Use short paragraphs (1-3 sentences max) to maximize readability.
+CRITICAL STRUCTURAL CONSTRAINTS TO ACHIEVE 100% HUMAN CHARACTERISTICS & ELIMINATE AI-DETECTION MARKERS:
+1. High Sentence Burstiness: Mix sentence structures dramatically. Place ultra-short, punchy sentences (2-5 words) directly next to long, detailed clauses (20-30 words).
+2. Casual, Interactive Human Transitions: Avoid robotic connectors like "Furthermore," "Moreover," "In conclusion," "It is crucial to note," or "Let us delve." Instead, use conversational, human phrases: "Look,", "Here's the deal:", "Let's face it,", "Actually,", "To be fair,", "Now, for the tricky part."
+3. Real-World Field Anecdotes: Introduce brief, realistic expert anecdotes or field experiences (e.g., "A crew I worked with in Cleveland once...", "When inspecting HUD properties in the winter, we often see...") to make the writing look 100% authentic and grounded.
+4. Clear formatting with short paragraphs (1-3 sentences maximum) for high readability.
 
-Core Technical & Field Requirements:
-- Specialize in REO properties, HUD, FHA, Fannie Mae, Freddie Mac guidelines, and standard field services (grass cutting, winterization, occupancy inspections, board-ups, etc.).
+Core Technical & Field Specifications:
+- Focus heavily on property preservation operational realities (e.g., HUD/FHA Allowables, winterization pressure testing, lawn mowing frequency/seasonality, board-up specifications, occupancy inspections, trashouts, mold remediation).
 - Structure the content with an SEO optimized H1 (using <h1>), Introduction, H2s (using <h2>), H3s (using <h3>), bullet lists (using <ul>/<li>), Expert Field Tips (using <blockquote>), and FAQ section.
 - Output MUST be formatted in clean, semantic HTML. Do not wrap the output in any markdown block like \`\`\`html or \`\`\`xml. Just return the raw HTML string.
 
@@ -48,14 +48,14 @@ Select the image src URLs from the following list of high-quality verified stock
 - Trashout Cleaning / Interior Debris: https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=800&h=500&q=80
 - Paperwork Audit / Compliance: https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&h=500&q=80
 
-At the very end of your response, append an "SEO Metadata" section formatted inside a JSON code block like this:
+At the very end of your response, append an \"SEO Metadata\" section formatted inside a JSON code block like this:
 \`\`\`json
 { "seoTitle": "...", "metaDescription": "...", "focusKeyword": "...", "secondaryKeywords": ["..."] }
 \`\`\``;
 
   try {
     const res = await callGeminiApi({
-      prompt: `Write a human-grade ${contentType} about "${topic}" for audience "${audience}" in raw HTML format. Keep paragraphs short (1-3 sentences), use active voice, contractions, high sentence length burstiness, and casual transitions. Word count target: ${length}. Include 1-2 appropriate images from the specified list.`,
+      prompt: `Write a highly-accurate, deeply researched ${contentType} about "${topic}" for audience "${audience}" in raw HTML format. Emphasize expert operational knowledge, interactive human tone, realistic anecdotes, contractions, and high sentence burstiness. Word count target: ${length}. Include 1-2 matching images from the specified list.`,
       systemInstruction: systemPrompt,
       jsonMode: false,
     });
