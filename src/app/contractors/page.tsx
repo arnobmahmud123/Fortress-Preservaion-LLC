@@ -7,6 +7,8 @@ import SiteFooter from "@/components/public/SiteFooter";
 
 export default function ContractorsPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     companyName: "",
@@ -20,9 +22,43 @@ export default function ContractorsPage() {
     additionalInfo: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/info@fortresspreservationllc.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          FormType: "Contractor Vendor Application",
+          FullName: formData.fullName,
+          CompanyName: formData.companyName,
+          Email: formData.email,
+          Phone: formData.phone,
+          Experience: formData.experience,
+          ServicesOffered: formData.services,
+          CoverageAreas: formData.serviceAreas,
+          InsuranceAndLicenses: formData.insurance || "Not provided",
+          AdditionalDetails: formData.additionalInfo || "None"
+        })
+      });
+
+      const result = await response.json();
+      if (response.ok && result.success) {
+        setSubmitted(true);
+      } else {
+        setError("There was a problem sending your application. Please try again.");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,56 +69,48 @@ export default function ContractorsPage() {
       <section className="py-16 bg-gradient-to-b from-[#0B1D3A] to-[#071120] border-b border-slate-800">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <span className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold rounded-full uppercase tracking-widest mb-4">
-            Vendor Contractor Network
+            Vendor Partner Network
           </span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
-            Join the Fortress Contractor Network
+            For Field Contractors & Inspectors
           </h1>
           <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-            Expand your field preservation business with consistent work order volume across 47 covered states.
+            Partner with a premier national preservation company. We offer reliable, bi-weekly pay cycles and consistent volume.
           </p>
         </div>
       </section>
 
-      {/* Contractor Benefits */}
+      {/* Value Prop Section */}
       <section className="py-16 container mx-auto px-4 max-w-6xl">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl font-extrabold text-white mb-3">Build Your Business with Fortress</h2>
+          <h2 className="text-3xl font-extrabold text-white mb-3">Why Partner With Fortress?</h2>
           <p className="text-slate-400 text-sm">
-            We actively onboard qualified property preservation contractors, field inspectors, and REO maintenance crews.
+            We value our field partners. When you succeed, our clients succeed. Here is what we bring to the table.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">💳</div>
+            <h3 className="text-lg font-bold text-white mb-2">Fast Pay Cycles</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Guaranteed bi-weekly payments via direct deposit for all approved work orders. No waiting for 60 or 90 days.
+            </p>
+          </div>
+
           <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
             <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">📈</div>
             <h3 className="text-lg font-bold text-white mb-2">Consistent Volume</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Year-round work orders assigned directly to your local coverage zone.
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Steady stream of occupancy checks, seasonal maintenance, and REO preservation orders in your defined service zip codes.
             </p>
           </div>
 
           <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
-            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">💵</div>
-            <h3 className="text-lg font-bold text-white mb-2">Prompt Pay Terms</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Competitive rate matrix with Net-15 & Net-30 payment guarantees.
-            </p>
-          </div>
-
-          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
-            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">📱</div>
-            <h3 className="text-lg font-bold text-white mb-2">Mobile Field App</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Mobile app for real-time photo uploads, PCR creation, and instant invoicing.
-            </p>
-          </div>
-
-          <div className="p-6 bg-[#0B1D3A]/60 border border-amber-500/20 rounded-2xl">
-            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">🎯</div>
-            <h3 className="text-lg font-bold text-white mb-2">Dedicated Support</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Regional vendor coordinators to assist with bid approvals and compliance.
+            <div className="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-400 text-xl flex items-center justify-center mb-4">🛠️</div>
+            <h3 className="text-lg font-bold text-white mb-2">Clear Scope Instructions</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Detailed guidelines, photo checklists, and mobile-friendly submission options so work is approved on the first review.
             </p>
           </div>
         </div>
@@ -107,7 +135,7 @@ export default function ContractorsPage() {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Vendor Application Received</h3>
                 <p className="text-slate-300 text-sm max-w-md mx-auto">
-                  Thank you, <span className="text-amber-400 font-semibold">{formData.fullName}</span> ({formData.companyName}). Our vendor onboarding team will review your application and contact you shortly.
+                  Thank you, <span className="text-amber-400 font-semibold">{formData.fullName}</span> ({formData.companyName}). Our vendor onboarding team will review your application and contact you at <span className="text-amber-400">{formData.email}</span>.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
@@ -118,6 +146,11 @@ export default function ContractorsPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {error && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl">
+                    {error}
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold uppercase text-slate-300 mb-2">Full Name *</label>
@@ -226,9 +259,20 @@ export default function ContractorsPage() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 uppercase tracking-wider text-sm transition-all shadow-lg shadow-amber-500/20"
+                  disabled={loading}
+                  className="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 uppercase tracking-wider text-sm transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  Submit Vendor Application
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-slate-950" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Vendor Application"
+                  )}
                 </button>
               </form>
             )}
