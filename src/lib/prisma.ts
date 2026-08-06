@@ -1,38 +1,48 @@
 import { PrismaClient } from "@prisma/client"
 import { PrismaD1 } from "@prisma/adapter-d1"
 
-/**
- * Get a Prisma client instance backed by D1.
- * Called fresh on every request so getRequestContext() works correctly.
- * Falls back to local SQLite for local dev.
- */
-function getPrismaClient(): PrismaClient {
-  // Try to get D1 binding from the live request context (Cloudflare Workers)
+declare global {
+  var prismaGlobal: PrismaClient | undefined
+  var mockDbPosts: any[] | undefined
+}
+
+function getActiveClient(): PrismaClient {
+  // If we already successfully created and cached the real D1 client, use it.
+  if (globalThis.prismaGlobal) {
+    return globalThis.prismaGlobal;
+  }
+
+  // Try to get D1 binding from the live Cloudflare context
   try {
-    const { getRequestContext } = require("@opennextjs/cloudflare");
-    const ctx = getRequestContext();
+    const { getCloudflareContext } = require("@opennextjs/cloudflare");
+    const ctx = getCloudflareContext();
     if (ctx?.env?.DB) {
+      console.log("[Prisma] Found D1 DB binding in Cloudflare Context. Creating PrismaClient with PrismaD1.");
       const adapter = new PrismaD1(ctx.env.DB);
-      return new PrismaClient({ adapter });
+      const client = new PrismaClient({ adapter });
+      
+      // Cache it globally so we don't recreate it on subsequent requests
+      globalThis.prismaGlobal = client;
+      return client;
     }
-  } catch {
-    // getRequestContext unavailable outside live request (build time, local dev)
+  } catch (error) {
+    // Context not ready/available yet (e.g. during build or cold start init)
   }
 
-  // Local dev: use the SQLite file
-  if (process.env.NODE_ENV !== "production") {
-    return new PrismaClient();
+  // Local development fallback (non-edge)
+  const isCloudflare = typeof globalThis.caches !== "undefined" || process.env.NEXT_RUNTIME === "edge";
+  if (!isCloudflare) {
+    console.log("[Prisma] Local development detected. Creating standard PrismaClient.");
+    const client = new PrismaClient();
+    globalThis.prismaGlobal = client;
+    return client;
   }
 
-  // Production Cloudflare without D1: return mock to avoid crashes
+  // Deployed on edge, but D1 not bound/configured yet (e.g. during build/static generation)
   return getMockClient();
 }
 
 // ─── Mock client (Cloudflare fallback or local in-memory) ────────────────────
-
-declare global {
-  var mockDbPosts: any[] | undefined;
-}
 
 function getMockClient(): PrismaClient {
   if (!globalThis.mockDbPosts) globalThis.mockDbPosts = [];
@@ -116,12 +126,12 @@ function getMockClient(): PrismaClient {
 // ─── Exported proxy ───────────────────────────────────────────────────────────
 
 /**
- * A proxy that creates a fresh D1-backed PrismaClient on every property access.
- * This ensures getRequestContext() is called during the actual request, not at module init.
+ * A proxy that forwards all property accesses to the active client.
+ * This guarantees we resolve the client dynamically inside request context.
  */
 const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    const client = getPrismaClient();
+    const client = getActiveClient();
     const value = (client as any)[prop];
     return typeof value === "function" ? value.bind(client) : value;
   }
