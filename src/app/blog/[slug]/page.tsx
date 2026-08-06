@@ -139,12 +139,14 @@ export default async function BlogPostDetailPage({
           {/* HTML Rendered Content */}
           <div 
             className="prose prose-invert prose-amber max-w-none text-slate-300 leading-relaxed space-y-6 text-base md:text-lg pt-4
-              prose-headings:text-white prose-headings:font-bold prose-headings:tracking-tight
-              prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-800 prose-h2:pb-2
-              prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+              prose-headings:font-bold prose-headings:tracking-tight
+              prose-h1:text-white
+              prose-h2:text-2xl prose-h2:text-amber-400 prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-800 prose-h2:pb-2
+              prose-h3:text-xl prose-h3:text-amber-400 prose-h3:mt-6 prose-h3:mb-3
+              prose-h4:text-lg prose-h4:text-amber-400 prose-h4:mt-4 prose-h4:mb-2
               prose-p:mb-4
               prose-img:rounded-2xl prose-img:border prose-img:border-slate-800 prose-img:shadow-lg prose-img:my-8 prose-img:mx-auto prose-img:object-cover prose-img:aspect-[16/10] prose-img:w-full prose-img:max-w-2xl
-              prose-blockquote:border-l-4 prose-blockquote:border-amber-400 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-400
+              prose-blockquote:bg-[#0B1D3A]/60 prose-blockquote:border-l-4 prose-blockquote:border-amber-400 prose-blockquote:p-4 md:prose-blockquote:p-6 prose-blockquote:rounded-r-2xl prose-blockquote:text-slate-200 prose-blockquote:not-italic prose-blockquote:before:content-none prose-blockquote:after:content-none prose-blockquote:p:before:content-none prose-blockquote:p:after:content-none
               prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-4
               prose-ol:list-decimal prose-ol:pl-6 prose-ol:mb-4
               prose-li:mb-2"

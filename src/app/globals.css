@@ -95,3 +95,32 @@
     @apply font-sans scroll-smooth;
   }
 }
+
+/* Custom Blog Post Typography Overrides (Visual Editor Alignment) */
+.prose blockquote {
+  background-color: rgba(11, 29, 58, 0.6) !important;
+  border-left: 4px solid #fbbf24 !important; /* amber-400 */
+  padding: 1.25rem 1.5rem !important;
+  border-top-right-radius: 1rem !important;
+  border-bottom-right-radius: 1rem !important;
+  color: #e2e8f0 !important; /* slate-200 */
+  font-style: normal !important;
+  margin: 2rem 0 !important;
+}
+
+.prose blockquote::before,
+.prose blockquote::after,
+.prose blockquote p::before,
+.prose blockquote p::after {
+  content: "" !important;
+}
+
+.prose h2, .prose h3, .prose h4 {
+  color: #fbbf24 !important; /* amber-400 */
+}
+
+/* Ensure inline font colors set by the rich editor are honored */
+.prose [style*="color"] {
+  color: inherit;
+}
+
